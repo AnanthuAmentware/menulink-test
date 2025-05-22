@@ -12,6 +12,7 @@ import { Switch } from "@/components/ui/switch";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -144,7 +145,7 @@ const AdminEdit = () => {
   return (
     <div className="page-container">
       <div className="max-w-3xl mx-auto">
-        <h1 className="text-4xl font-bold font-display mb-8 text-restaurant-burgundy">
+        <h1 className="text-4xl font-bold font-display mb-8 text-primary">
           Edit Restaurant (Admin)
         </h1>
         
@@ -297,7 +298,7 @@ const AdminEdit = () => {
                   </Button>
                   <Button 
                     type="submit"
-                    className="bg-restaurant-burgundy hover:bg-restaurant-burgundy/90"
+                    className="bg-primary hover:bg-primary/90"
                     disabled={saving}
                   >
                     {saving ? (
