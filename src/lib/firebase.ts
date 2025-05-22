@@ -57,5 +57,6 @@ export {
   query,
   where,
   getDocs,
-  Timestamp
+  Timestamp,
+  User
 };
