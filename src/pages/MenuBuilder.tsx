@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import { 
   Dialog, 
   DialogContent, 
@@ -65,21 +66,21 @@ const SortableMenuItem = ({
       ref={setNodeRef}
       style={style}
       {...attributes}
-      className="bg-white rounded-md shadow-sm border p-3 mb-2 flex items-center justify-between"
+      className="glass-card mb-2 p-3 flex items-center justify-between"
     >
       <div className="flex-1 min-w-0">
         <div className="flex justify-between">
           <div className="font-medium truncate">{item.name}</div>
-          <div className="text-restaurant-burgundy font-bold">${item.price.toFixed(2)}</div>
+          <div className="text-primary font-bold">${item.price.toFixed(2)}</div>
         </div>
-        <div className="text-sm text-gray-500 truncate">{item.description}</div>
+        <div className="text-sm text-gray-400 truncate">{item.description}</div>
       </div>
       
       <div className="flex items-center ml-4 space-x-2">
-        <Button size="icon" variant="ghost" onClick={() => onEdit(item)}>
+        <Button size="icon" variant="ghost" onClick={() => onEdit(item)} className="hover:bg-white/10">
           <Edit className="h-4 w-4" />
         </Button>
-        <Button size="icon" variant="ghost" onClick={() => onDelete(item.id)}>
+        <Button size="icon" variant="ghost" onClick={() => onDelete(item.id)} className="hover:bg-white/10">
           <Trash2 className="h-4 w-4 text-red-500" />
         </Button>
         <div {...listeners} className="cursor-move p-1">
@@ -144,7 +145,7 @@ const SortableMenuSection = ({
     <div
       ref={setNodeRef}
       style={style}
-      className="menu-section mb-6 last:mb-0"
+      className="menu-section glass-card mb-6 last:mb-0 border-l-4 border-primary/50"
     >
       <div className="flex justify-between items-center mb-4">
         <div className="flex items-center">
@@ -154,11 +155,12 @@ const SortableMenuSection = ({
           </div>
         </div>
         
-        <div className="flex space-x-2">
+        <div className="flex flex-wrap gap-2">
           <Button 
             variant="outline" 
             size="sm"
             onClick={() => onEdit(section)}
+            className="border-white/30 bg-white/10 backdrop-blur-sm hover:bg-white/20"
           >
             <Edit className="h-4 w-4 mr-1" />
             Edit
@@ -167,6 +169,7 @@ const SortableMenuSection = ({
             variant="outline" 
             size="sm"
             onClick={() => onAddItem(section.id)}
+            className="border-white/30 bg-white/10 backdrop-blur-sm hover:bg-white/20"
           >
             <Plus className="h-4 w-4 mr-1" />
             Add Item
@@ -175,7 +178,7 @@ const SortableMenuSection = ({
             variant="outline" 
             size="sm"
             onClick={() => onDelete(section.id)}
-            className="text-red-500 border-red-200 hover:bg-red-50"
+            className="border-red-400/30 text-red-500 hover:bg-red-500/10"
           >
             <Trash2 className="h-4 w-4 mr-1" />
             Delete
@@ -203,11 +206,11 @@ const SortableMenuSection = ({
                 />
               ))
             ) : (
-              <div className="text-center py-8 border border-dashed rounded-md bg-gray-50">
-                <p className="text-gray-500">No items in this section</p>
+              <div className="text-center py-8 border border-dashed rounded-md bg-white/5 backdrop-blur-sm">
+                <p className="text-gray-400">No items in this section</p>
                 <Button 
                   variant="link" 
-                  className="mt-2 text-restaurant-burgundy"
+                  className="mt-2 text-primary"
                   onClick={() => onAddItem(section.id)}
                 >
                   Add Item
@@ -247,7 +250,11 @@ const MenuBuilder = () => {
   const { toast } = useToast();
   
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     })
@@ -523,7 +530,7 @@ const MenuBuilder = () => {
     return (
       <div className="page-container flex items-center justify-center min-h-[60vh]">
         <div className="flex flex-col items-center">
-          <RefreshCcw className="h-8 w-8 animate-spin text-restaurant-burgundy" />
+          <RefreshCcw className="h-8 w-8 animate-spin text-primary" />
           <p className="mt-4 text-lg">Loading menu builder...</p>
         </div>
       </div>
@@ -533,13 +540,13 @@ const MenuBuilder = () => {
   return (
     <div className="page-container">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
-        <h1 className="text-3xl md:text-4xl font-bold font-display mb-4 md:mb-0 text-restaurant-burgundy">Menu Builder</h1>
+        <h1 className="text-3xl md:text-4xl font-bold font-display mb-4 md:mb-0 text-primary">Menu Builder</h1>
         
-        <div className="flex space-x-4">
+        <div className="flex flex-wrap gap-2">
           <Button
             variant="outline"
             onClick={openAddSectionDialog}
-            className="flex items-center"
+            className="flex items-center border-white/30 bg-white/10 backdrop-blur-sm"
           >
             <Plus className="h-4 w-4 mr-2" />
             Add Section
@@ -548,7 +555,7 @@ const MenuBuilder = () => {
           <Button
             onClick={handleSaveMenu}
             disabled={saving || !menuChanged}
-            className="flex items-center bg-restaurant-burgundy hover:bg-restaurant-burgundy/90"
+            className="flex items-center bg-primary/80 hover:bg-primary backdrop-blur-sm"
           >
             {saving ? (
               <>
@@ -566,15 +573,15 @@ const MenuBuilder = () => {
       </div>
 
       {menuSections.length === 0 ? (
-        <Card>
+        <Card className="glass-card">
           <CardContent className="flex flex-col items-center justify-center py-16">
             <h3 className="text-xl font-bold mb-4">Your menu is empty</h3>
-            <p className="text-gray-600 mb-6 text-center max-w-md">
+            <p className="mb-6 text-center max-w-md">
               Start by adding a section to your menu, then add items to each section.
             </p>
             <Button
               onClick={openAddSectionDialog}
-              className="flex items-center bg-restaurant-burgundy hover:bg-restaurant-burgundy/90"
+              className="flex items-center bg-primary/80 hover:bg-primary backdrop-blur-sm"
             >
               <Plus className="h-4 w-4 mr-2" />
               Add Your First Section
@@ -611,7 +618,7 @@ const MenuBuilder = () => {
 
       {/* Section Dialog */}
       <Dialog open={sectionDialogOpen} onOpenChange={setSectionDialogOpen}>
-        <DialogContent>
+        <DialogContent className="glass-dialog">
           <DialogHeader>
             <DialogTitle>
               {currentSection ? "Edit Section" : "Add Section"}
@@ -638,12 +645,12 @@ const MenuBuilder = () => {
           </div>
           
           <DialogFooter>
-            <Button variant="outline" onClick={() => setSectionDialogOpen(false)}>
+            <Button variant="outline" onClick={() => setSectionDialogOpen(false)} className="border-white/30 bg-white/10">
               Cancel
             </Button>
             <Button 
               onClick={handleSaveSection}
-              className="bg-restaurant-burgundy hover:bg-restaurant-burgundy/90"
+              className="bg-primary/80 hover:bg-primary"
             >
               {currentSection ? "Update Section" : "Add Section"}
             </Button>
@@ -653,7 +660,7 @@ const MenuBuilder = () => {
 
       {/* Item Dialog */}
       <Dialog open={itemDialogOpen} onOpenChange={setItemDialogOpen}>
-        <DialogContent className="sm:max-w-[500px]">
+        <DialogContent className="glass-dialog sm:max-w-[500px]">
           <DialogHeader>
             <DialogTitle>
               {currentItem ? "Edit Menu Item" : "Add Menu Item"}
@@ -703,6 +710,7 @@ const MenuBuilder = () => {
                 onChange={(e) => setItemDescription(e.target.value)}
                 placeholder="Describe this item..."
                 rows={3}
+                className="border border-white/30 bg-white/10 backdrop-blur-sm resize-none focus:border-white/50 focus:bg-white/20"
               />
             </div>
             
@@ -716,19 +724,19 @@ const MenuBuilder = () => {
                 onChange={(e) => setItemImageUrl(e.target.value)}
                 placeholder="https://example.com/image.jpg"
               />
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-gray-400">
                 For best results, use square images (1:1 aspect ratio)
               </p>
             </div>
           </div>
           
           <DialogFooter>
-            <Button variant="outline" onClick={() => setItemDialogOpen(false)}>
+            <Button variant="outline" onClick={() => setItemDialogOpen(false)} className="border-white/30 bg-white/10">
               Cancel
             </Button>
             <Button 
               onClick={handleSaveItem}
-              className="bg-restaurant-burgundy hover:bg-restaurant-burgundy/90"
+              className="bg-primary/80 hover:bg-primary"
             >
               {currentItem ? "Update Item" : "Add Item"}
             </Button>

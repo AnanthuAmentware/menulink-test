@@ -47,8 +47,8 @@ const Dashboard = () => {
     fetchRestaurantData();
   }, [currentUser, toast]);
 
-  const menuItemsCount = restaurant?.menuSections.reduce(
-    (total, section) => total + section.items.length, 
+  const menuItemsCount = restaurant?.menuSections?.reduce(
+    (total, section) => total + (section?.items?.length || 0), 
     0
   ) || 0;
 
@@ -56,7 +56,7 @@ const Dashboard = () => {
     return (
       <div className="page-container flex items-center justify-center min-h-[60vh]">
         <div className="flex flex-col items-center">
-          <RefreshCcw className="h-8 w-8 animate-spin text-restaurant-burgundy" />
+          <RefreshCcw className="h-8 w-8 animate-spin text-primary" />
           <p className="mt-4 text-lg">Loading your restaurant dashboard...</p>
         </div>
       </div>
@@ -65,12 +65,12 @@ const Dashboard = () => {
 
   return (
     <div className="page-container">
-      <h1 className="text-4xl font-bold font-display mb-8 text-restaurant-burgundy">Restaurant Dashboard</h1>
+      <h1 className="text-4xl font-bold font-display mb-8 text-primary">Restaurant Dashboard</h1>
       
       {restaurant ? (
         <div className="dashboard-container">
           <div className="col-span-1 md:col-span-2 space-y-6">
-            <Card className="restaurant-card">
+            <Card className="glass-card">
               <CardHeader className="pb-2">
                 <CardTitle className="text-2xl">{restaurant.name}</CardTitle>
                 <CardDescription>
@@ -83,15 +83,15 @@ const Dashboard = () => {
                     <span className="font-medium">Status:</span>
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                       restaurant.isPublic 
-                        ? "bg-green-100 text-green-800" 
-                        : "bg-amber-100 text-amber-800"
+                        ? "bg-green-500/30 backdrop-blur-sm text-green-800" 
+                        : "bg-amber-500/30 backdrop-blur-sm text-amber-800"
                     }`}>
                       {restaurant.isPublic ? "Public" : "Private"}
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="font-medium">Menu Sections:</span>
-                    <span>{restaurant.menuSections.length}</span>
+                    <span>{restaurant.menuSections?.length || 0}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="font-medium">Menu Items:</span>
@@ -99,22 +99,22 @@ const Dashboard = () => {
                   </div>
                   <div>
                     <p className="font-medium mb-1">Description:</p>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm">
                       {restaurant.description || "No description available."}
                     </p>
                   </div>
                   <div>
                     <p className="font-medium mb-1">Contact:</p>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm">
                       {restaurant.contact || "No contact information provided."}
                     </p>
                   </div>
                 </div>
               </CardContent>
-              <CardFooter className="flex justify-between pt-4">
+              <CardFooter className="flex flex-col sm:flex-row justify-between gap-2 pt-4">
                 <Button 
                   variant="outline"
-                  className="flex items-center"
+                  className="flex items-center w-full sm:w-auto border-white/30 bg-white/10 backdrop-blur-sm"
                   onClick={() => navigate('/edit-profile')}
                 >
                   <Edit className="h-4 w-4 mr-2" />
@@ -122,7 +122,7 @@ const Dashboard = () => {
                 </Button>
                 <Button
                   variant="outline"
-                  className="flex items-center"
+                  className="flex items-center w-full sm:w-auto border-white/30 bg-white/10 backdrop-blur-sm"
                   onClick={() => navigate(`/menu/${restaurant.id}`)}
                 >
                   <Eye className="h-4 w-4 mr-2" />
@@ -133,19 +133,19 @@ const Dashboard = () => {
           </div>
           
           <div className="col-span-1 space-y-6">
-            <Card className="dashboard-panel">
+            <Card className="glass-card">
               <CardHeader>
                 <CardTitle>Quick Actions</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <Button 
-                  className="w-full bg-restaurant-burgundy hover:bg-restaurant-burgundy/90"
+                  className="w-full bg-primary/80 hover:bg-primary backdrop-blur-sm"
                   onClick={() => navigate('/menu-builder')}
                 >
                   Edit Menu
                 </Button>
                 <Button 
-                  className="w-full" 
+                  className="w-full border-white/30 bg-white/10 backdrop-blur-sm hover:bg-white/20" 
                   variant="outline"
                   onClick={() => navigate('/qr-code')}
                 >
@@ -155,8 +155,7 @@ const Dashboard = () => {
               </CardContent>
             </Card>
             
-            {/* Additional card for tips or help */}
-            <Card className="dashboard-panel">
+            <Card className="glass-card">
               <CardHeader>
                 <CardTitle>Getting Started</CardTitle>
               </CardHeader>
@@ -173,13 +172,13 @@ const Dashboard = () => {
           </div>
         </div>
       ) : (
-        <div className="text-center py-12">
+        <div className="text-center py-12 glass-card p-10">
           <h2 className="text-2xl font-semibold">Restaurant Not Found</h2>
           <p className="mt-2 text-gray-600">
             We couldn't find your restaurant information. Please complete your profile.
           </p>
           <Button 
-            className="mt-4 bg-restaurant-burgundy hover:bg-restaurant-burgundy/90"
+            className="mt-4 bg-primary/80 hover:bg-primary backdrop-blur-sm"
             onClick={() => navigate('/edit-profile')}
           >
             Create Restaurant Profile

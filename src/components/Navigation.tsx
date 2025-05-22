@@ -17,7 +17,7 @@ const Navigation = () => {
   const closeMenu = () => setIsOpen(false);
 
   return (
-    <nav className="bg-restaurant-burgundy text-white shadow-md">
+    <nav className="bg-primary/70 text-white shadow-md backdrop-blur-md z-50 sticky top-0">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex">
@@ -32,19 +32,19 @@ const Navigation = () => {
               <>
                 <Link 
                   to="/" 
-                  className={`px-3 py-2 rounded-md text-sm font-medium ${isActive('/') ? 'bg-restaurant-burgundy/80' : 'hover:bg-restaurant-burgundy/50'}`}
+                  className={`px-3 py-2 rounded-md text-sm font-medium ${isActive('/') ? 'bg-white/20 backdrop-blur-sm' : 'hover:bg-white/10'}`}
                 >
                   Home
                 </Link>
                 <Link 
                   to="/login" 
-                  className={`px-3 py-2 rounded-md text-sm font-medium ${isActive('/login') ? 'bg-restaurant-burgundy/80' : 'hover:bg-restaurant-burgundy/50'}`}
+                  className={`px-3 py-2 rounded-md text-sm font-medium ${isActive('/login') ? 'bg-white/20 backdrop-blur-sm' : 'hover:bg-white/10'}`}
                 >
                   Login
                 </Link>
                 <Link 
                   to="/register" 
-                  className={`px-3 py-2 rounded-md text-sm font-medium ${isActive('/register') ? 'bg-restaurant-burgundy/80' : 'hover:bg-restaurant-burgundy/50'}`}
+                  className={`px-3 py-2 rounded-md text-sm font-medium ${isActive('/register') ? 'bg-white/20 backdrop-blur-sm' : 'hover:bg-white/10'}`}
                 >
                   Register
                 </Link>
@@ -55,19 +55,19 @@ const Navigation = () => {
               <>
                 <Link 
                   to="/dashboard" 
-                  className={`px-3 py-2 rounded-md text-sm font-medium ${isActive('/dashboard') ? 'bg-restaurant-burgundy/80' : 'hover:bg-restaurant-burgundy/50'}`}
+                  className={`px-3 py-2 rounded-md text-sm font-medium ${isActive('/dashboard') ? 'bg-white/20 backdrop-blur-sm' : 'hover:bg-white/10'}`}
                 >
                   Dashboard
                 </Link>
                 <Link 
                   to="/menu-builder" 
-                  className={`px-3 py-2 rounded-md text-sm font-medium ${isActive('/menu-builder') ? 'bg-restaurant-burgundy/80' : 'hover:bg-restaurant-burgundy/50'}`}
+                  className={`px-3 py-2 rounded-md text-sm font-medium ${isActive('/menu-builder') ? 'bg-white/20 backdrop-blur-sm' : 'hover:bg-white/10'}`}
                 >
                   Menu Builder
                 </Link>
                 <Link 
                   to="/qr-code" 
-                  className={`px-3 py-2 rounded-md text-sm font-medium ${isActive('/qr-code') ? 'bg-restaurant-burgundy/80' : 'hover:bg-restaurant-burgundy/50'}`}
+                  className={`px-3 py-2 rounded-md text-sm font-medium ${isActive('/qr-code') ? 'bg-white/20 backdrop-blur-sm' : 'hover:bg-white/10'}`}
                 >
                   QR Code
                 </Link>
@@ -77,7 +77,7 @@ const Navigation = () => {
             {isAdmin && (
               <Link 
                 to="/admin" 
-                className={`px-3 py-2 rounded-md text-sm font-medium ${isActive('/admin') ? 'bg-restaurant-burgundy/80' : 'hover:bg-restaurant-burgundy/50'}`}
+                className={`px-3 py-2 rounded-md text-sm font-medium ${isActive('/admin') ? 'bg-white/20 backdrop-blur-sm' : 'hover:bg-white/10'}`}
               >
                 Admin Panel
               </Link>
@@ -86,7 +86,7 @@ const Navigation = () => {
             {isAuthenticated && (
               <Button 
                 variant="outline" 
-                className="border-white hover:bg-white hover:text-restaurant-burgundy" 
+                className="border-white hover:bg-white hover:text-primary" 
                 onClick={logout}
               >
                 Logout
@@ -98,7 +98,7 @@ const Navigation = () => {
           <div className="flex items-center md:hidden">
             <button
               onClick={toggleMenu}
-              className="inline-flex items-center justify-center p-2 rounded-md text-white hover:bg-restaurant-burgundy/50 focus:outline-none"
+              className="inline-flex items-center justify-center p-2 rounded-md text-white hover:bg-white/10 focus:outline-none"
               aria-expanded="false"
             >
               <span className="sr-only">Open main menu</span>
@@ -110,7 +110,7 @@ const Navigation = () => {
 
       {/* Mobile Navigation */}
       {isOpen && (
-        <div className="md:hidden bg-restaurant-burgundy/95 fixed inset-0 z-50 flex flex-col pt-16">
+        <div className="md:hidden bg-primary/95 backdrop-blur-md fixed inset-0 z-50 flex flex-col pt-16">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
             <button 
               className="absolute top-4 right-4 text-white" 
@@ -121,7 +121,7 @@ const Navigation = () => {
             
             <Link 
               to="/" 
-              className={`block px-3 py-2 rounded-md text-base font-medium ${isActive('/') ? 'bg-restaurant-burgundy/80' : 'hover:bg-restaurant-burgundy/50'}`}
+              className={`block px-3 py-2 rounded-md text-base font-medium ${isActive('/') ? 'bg-white/20' : 'hover:bg-white/10'}`}
               onClick={closeMenu}
             >
               Home
@@ -131,14 +131,14 @@ const Navigation = () => {
               <>
                 <Link 
                   to="/login" 
-                  className={`block px-3 py-2 rounded-md text-base font-medium ${isActive('/login') ? 'bg-restaurant-burgundy/80' : 'hover:bg-restaurant-burgundy/50'}`}
+                  className={`block px-3 py-2 rounded-md text-base font-medium ${isActive('/login') ? 'bg-white/20' : 'hover:bg-white/10'}`}
                   onClick={closeMenu}
                 >
                   Login
                 </Link>
                 <Link 
                   to="/register" 
-                  className={`block px-3 py-2 rounded-md text-base font-medium ${isActive('/register') ? 'bg-restaurant-burgundy/80' : 'hover:bg-restaurant-burgundy/50'}`}
+                  className={`block px-3 py-2 rounded-md text-base font-medium ${isActive('/register') ? 'bg-white/20' : 'hover:bg-white/10'}`}
                   onClick={closeMenu}
                 >
                   Register
@@ -150,21 +150,21 @@ const Navigation = () => {
               <>
                 <Link 
                   to="/dashboard" 
-                  className={`block px-3 py-2 rounded-md text-base font-medium ${isActive('/dashboard') ? 'bg-restaurant-burgundy/80' : 'hover:bg-restaurant-burgundy/50'}`}
+                  className={`block px-3 py-2 rounded-md text-base font-medium ${isActive('/dashboard') ? 'bg-white/20' : 'hover:bg-white/10'}`}
                   onClick={closeMenu}
                 >
                   Dashboard
                 </Link>
                 <Link 
                   to="/menu-builder" 
-                  className={`block px-3 py-2 rounded-md text-base font-medium ${isActive('/menu-builder') ? 'bg-restaurant-burgundy/80' : 'hover:bg-restaurant-burgundy/50'}`}
+                  className={`block px-3 py-2 rounded-md text-base font-medium ${isActive('/menu-builder') ? 'bg-white/20' : 'hover:bg-white/10'}`}
                   onClick={closeMenu}
                 >
                   Menu Builder
                 </Link>
                 <Link 
                   to="/qr-code" 
-                  className={`block px-3 py-2 rounded-md text-base font-medium ${isActive('/qr-code') ? 'bg-restaurant-burgundy/80' : 'hover:bg-restaurant-burgundy/50'}`}
+                  className={`block px-3 py-2 rounded-md text-base font-medium ${isActive('/qr-code') ? 'bg-white/20' : 'hover:bg-white/10'}`}
                   onClick={closeMenu}
                 >
                   QR Code
@@ -175,7 +175,7 @@ const Navigation = () => {
             {isAdmin && (
               <Link 
                 to="/admin" 
-                className={`block px-3 py-2 rounded-md text-base font-medium ${isActive('/admin') ? 'bg-restaurant-burgundy/80' : 'hover:bg-restaurant-burgundy/50'}`}
+                className={`block px-3 py-2 rounded-md text-base font-medium ${isActive('/admin') ? 'bg-white/20' : 'hover:bg-white/10'}`}
                 onClick={closeMenu}
               >
                 Admin Panel
@@ -185,7 +185,7 @@ const Navigation = () => {
             {isAuthenticated && (
               <Button 
                 variant="outline" 
-                className="w-full border-white hover:bg-white hover:text-restaurant-burgundy mt-4" 
+                className="w-full border-white hover:bg-white hover:text-primary mt-4" 
                 onClick={() => {
                   logout();
                   closeMenu();
