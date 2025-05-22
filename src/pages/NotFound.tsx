@@ -14,16 +14,16 @@ const NotFound = () => {
   }, [location.pathname]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-restaurant-cream/10">
-      <div className="text-center">
-        <h1 className="text-6xl font-bold text-restaurant-burgundy font-display mb-4">404</h1>
-        <p className="text-2xl text-gray-600 mb-8">Oops! Page not found</p>
-        <p className="text-gray-500 max-w-md mx-auto mb-8">
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="glass-card p-10 text-center max-w-md mx-auto">
+        <h1 className="text-6xl font-bold text-primary font-display mb-4">404</h1>
+        <p className="text-2xl mb-8">Oops! Page not found</p>
+        <p className="text-gray-500 mx-auto mb-8">
           We couldn't find the page you were looking for. 
           The page may have been moved, or you might have mistyped the URL.
         </p>
         <Link to="/">
-          <Button className="bg-restaurant-burgundy hover:bg-restaurant-burgundy/90">
+          <Button className="bg-primary/70 hover:bg-primary/90 backdrop-blur-sm text-white">
             Return to Home
           </Button>
         </Link>

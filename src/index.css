@@ -1,3 +1,4 @@
+
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Lato:wght@300;400;700&family=Montserrat:wght@400;500;600;700&family=Merriweather:wght@400;700&family=Roboto:wght@300;400;500;700&family=Roboto+Slab:wght@400;500;600;700&family=Open+Sans:wght@400;600&family=Source+Sans+Pro:wght@400;600&family=Nunito:wght@400;600;700&family=Oswald:wght@400;500;600&display=swap');
 
 @tailwind base;
@@ -103,8 +104,15 @@
     @apply border-border;
   }
 
+  html, body {
+    @apply min-h-screen;
+    background-image: linear-gradient(to bottom right, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.1)), url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><path d="M0 0 100 0 100 100 0 100z" fill="%23f0f4f8" fill-opacity=".1"/></svg>');
+    background-size: cover;
+    background-attachment: fixed;
+  }
+
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
     font-family: var(--body-font, 'Lato'), sans-serif;
   }
 
@@ -114,16 +122,30 @@
 }
 
 @layer components {
+  /* Glassmorphism base styles */
+  .glass {
+    @apply bg-white/20 backdrop-blur-md border border-white/30 shadow-lg;
+  }
+
+  .glass-card {
+    @apply glass rounded-xl;
+  }
+
+  .glass-hover {
+    @apply transition duration-300 hover:bg-white/30 hover:shadow-xl;
+  }
+
+  /* Component overrides for glassmorphism */
   .menu-item-card {
-    @apply bg-gradient-to-br from-white to-white bg-opacity-20;
+    @apply glass-card p-6;
   }
 
   .restaurant-card {
-    @apply border border-amber-500/30 rounded-lg p-6 bg-white shadow-lg hover:shadow-xl transition-all duration-300;
+    @apply glass-card p-6 hover:shadow-xl transition-all duration-300;
   }
 
   .section-header {
-    @apply border-b-2 border-primary/30 pb-2 mb-4;
+    @apply border-b border-white/30 pb-2 mb-4 text-primary;
   }
 
   .page-container {
@@ -135,16 +157,31 @@
   }
 
   .dashboard-panel {
-    @apply bg-white p-6 rounded-lg shadow-md border border-gray-100;
+    @apply glass-card p-6;
   }
 
   .menu-section {
-    @apply bg-white rounded-lg shadow-md p-6 mb-6 relative border-l-4 border-primary;
+    @apply glass-card p-6 mb-6 relative border-l-4 border-primary/50;
+  }
+
+  /* Button overrides */
+  .btn-glass {
+    @apply glass px-4 py-2 rounded-lg transition-all duration-300 hover:bg-white/30 active:scale-95;
+  }
+
+  .btn-glass-primary {
+    @apply btn-glass bg-primary/20 text-primary-foreground border-primary/30 hover:bg-primary/30;
+  }
+
+  /* Form input overrides */
+  .input-glass {
+    @apply glass border-white/30 focus:border-white/50 focus:bg-white/30 focus:ring-1 focus:ring-white/50;
   }
 
   /* Theme-based utility classes */
   .theme-primary-bg {
-    background-color: hsl(var(--primary));
+    background-color: hsl(var(--primary) / 0.2);
+    backdrop-filter: blur(8px);
   }
 
   .theme-primary-text {
@@ -152,14 +189,105 @@
   }
 
   .theme-secondary-bg {
-    background-color: hsl(var(--secondary));
+    background-color: hsl(var(--secondary) / 0.2);
+    backdrop-filter: blur(8px);
   }
 
   .theme-accent-bg {
-    background-color: hsl(var(--accent));
+    background-color: hsl(var(--accent) / 0.2);
+    backdrop-filter: blur(8px);
   }
 
   .theme-gradient {
-    background: linear-gradient(to right, hsl(var(--primary)), hsl(var(--accent)));
+    background: linear-gradient(to right, 
+      hsla(var(--primary), 0.7), 
+      hsla(var(--accent), 0.7)
+    );
+    backdrop-filter: blur(8px);
   }
+
+  /* Navigation glassmorphism */
+  .nav-glass {
+    @apply glass sticky top-0 z-50 px-4 py-2;
+  }
+
+  /* Glass table */
+  .glass-table {
+    @apply w-full border-collapse;
+  }
+
+  .glass-table th {
+    @apply glass text-left p-3 border-b border-white/20;
+  }
+
+  .glass-table td {
+    @apply p-3 border-b border-white/10;
+  }
+
+  .glass-table tr {
+    @apply hover:bg-white/10 transition-colors;
+  }
+
+  /* Dialog/Modal glassmorphism */
+  .glass-dialog {
+    @apply glass-card p-0 overflow-hidden;
+  }
+
+  .glass-dialog-header {
+    @apply p-4 border-b border-white/20 bg-white/10;
+  }
+
+  .glass-dialog-content {
+    @apply p-4;
+  }
+
+  .glass-dialog-footer {
+    @apply p-4 border-t border-white/20 bg-white/10 flex justify-end gap-2;
+  }
+}
+
+/* Further overrides for specific shadcn components */
+.card {
+  @apply glass-card overflow-hidden;
+}
+
+.input, .textarea, .select {
+  @apply input-glass;
+}
+
+.button {
+  @apply btn-glass;
+}
+
+.button-primary {
+  @apply btn-glass-primary;
+}
+
+.dropdown-content {
+  @apply glass-card mt-1 py-1;
+}
+
+.modal, .dialog {
+  @apply glass-dialog;
+}
+
+.sidebar {
+  @apply glass border-r border-white/20;
+}
+
+.popover {
+  @apply glass-card;
+}
+
+/* Make background colors more transparent */
+.bg-background {
+  @apply bg-white/20 backdrop-blur-md;
+}
+
+.bg-card {
+  @apply bg-white/20 backdrop-blur-md;
+}
+
+.bg-white {
+  @apply bg-white/80 backdrop-blur-md;
 }

@@ -12,9 +12,9 @@ const ThemeCustomization = () => {
   return (
     <div className="container mx-auto py-8 px-4">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold mb-6">Customize Your Restaurant Theme</h1>
+        <h1 className="text-3xl font-bold mb-6 text-primary">Customize Your Restaurant Theme</h1>
         
-        <Alert className="mb-6">
+        <Alert className="glass-card mb-6 border-white/30">
           <AlertTitle>Theme Settings</AlertTitle>
           <AlertDescription>
             Customize your restaurant's appearance by selecting colors, fonts, and other styling options. 
@@ -22,10 +22,10 @@ const ThemeCustomization = () => {
           </AlertDescription>
         </Alert>
         
-        <Tabs defaultValue="editor">
-          <TabsList className="mb-6">
-            <TabsTrigger value="editor">Theme Editor</TabsTrigger>
-            <TabsTrigger value="export">Export/Import</TabsTrigger>
+        <Tabs defaultValue="editor" className="glass-card p-4">
+          <TabsList className="mb-6 bg-white/10 border border-white/20">
+            <TabsTrigger value="editor" className="data-[state=active]:bg-white/20">Theme Editor</TabsTrigger>
+            <TabsTrigger value="export" className="data-[state=active]:bg-white/20">Export/Import</TabsTrigger>
           </TabsList>
           
           <TabsContent value="editor">
@@ -33,32 +33,36 @@ const ThemeCustomization = () => {
           </TabsContent>
           
           <TabsContent value="export">
-            <div className="bg-white rounded-lg shadow p-6 space-y-6">
+            <div className="glass-card p-6 space-y-6">
               <div>
-                <h2 className="text-xl font-bold mb-2">Export Theme</h2>
+                <h2 className="text-xl font-bold mb-2 text-primary">Export Theme</h2>
                 <p className="text-gray-600 mb-4">Save your current theme settings to use on another restaurant or to back up your configuration.</p>
-                <Button onClick={() => {
-                  const themeString = JSON.stringify(theme, null, 2);
-                  const blob = new Blob([themeString], { type: 'application/json' });
-                  const url = URL.createObjectURL(blob);
-                  const a = document.createElement('a');
-                  a.href = url;
-                  a.download = `restaurant-theme-${new Date().toISOString().split('T')[0]}.json`;
-                  document.body.appendChild(a);
-                  a.click();
-                  document.body.removeChild(a);
-                }}>
+                <Button 
+                  onClick={() => {
+                    const themeString = JSON.stringify(theme, null, 2);
+                    const blob = new Blob([themeString], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `restaurant-theme-${new Date().toISOString().split('T')[0]}.json`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                  }}
+                  className="bg-primary/70 hover:bg-primary/90 backdrop-blur-sm"
+                >
                   Export Theme JSON
                 </Button>
               </div>
               
-              <div className="border-t pt-6">
-                <h2 className="text-xl font-bold mb-2">Import Theme</h2>
+              <div className="border-t border-white/20 pt-6">
+                <h2 className="text-xl font-bold mb-2 text-primary">Import Theme</h2>
                 <p className="text-gray-600 mb-4">Import a previously saved theme configuration.</p>
                 <div className="flex items-center">
                   <Button 
                     variant="outline" 
                     onClick={() => document.getElementById('theme-import')?.click()}
+                    className="bg-white/10 border-white/30 hover:bg-white/20"
                   >
                     Select Theme File
                   </Button>
@@ -88,8 +92,8 @@ const ThemeCustomization = () => {
                 </div>
               </div>
               
-              <div className="border-t pt-6">
-                <h2 className="text-xl font-bold mb-2">Reset to Default</h2>
+              <div className="border-t border-white/20 pt-6">
+                <h2 className="text-xl font-bold mb-2 text-primary">Reset to Default</h2>
                 <p className="text-gray-600 mb-4">Restore the default theme settings.</p>
                 <Button 
                   variant="destructive" 
@@ -98,6 +102,7 @@ const ThemeCustomization = () => {
                       resetToDefaultTheme();
                     }
                   }}
+                  className="bg-red-500/70 hover:bg-red-500/90 backdrop-blur-sm"
                 >
                   Reset Theme
                 </Button>

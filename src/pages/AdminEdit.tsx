@@ -125,8 +125,10 @@ const AdminEdit = () => {
   if (loading) {
     return (
       <div className="page-container flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="h-8 w-8 animate-spin text-restaurant-burgundy" />
-        <span className="ml-2">Loading restaurant data...</span>
+        <div className="glass-card p-8 flex items-center">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <span className="ml-2">Loading restaurant data...</span>
+        </div>
       </div>
     );
   }
@@ -134,10 +136,10 @@ const AdminEdit = () => {
   if (error && !restaurant) {
     return (
       <div className="page-container">
-        <Alert variant="destructive" className="mb-6">
+        <Alert variant="destructive" className="glass-card mb-6 border-red-300/50">
           <AlertDescription>{error}</AlertDescription>
         </Alert>
-        <Button onClick={() => navigate("/admin")}>Back to Admin Panel</Button>
+        <Button onClick={() => navigate("/admin")} className="glass hover:bg-white/30">Back to Admin Panel</Button>
       </div>
     );
   }
@@ -149,13 +151,13 @@ const AdminEdit = () => {
           Edit Restaurant (Admin)
         </h1>
         
-        <Card>
+        <Card className="border-white/30 bg-white/20 backdrop-blur-md">
           <CardHeader>
-            <CardTitle>Restaurant Information</CardTitle>
+            <CardTitle className="text-primary">Restaurant Information</CardTitle>
           </CardHeader>
           <CardContent>
             {error && (
-              <Alert variant="destructive" className="mb-6">
+              <Alert variant="destructive" className="glass-card mb-6 border-red-300/50">
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             )}
@@ -169,12 +171,13 @@ const AdminEdit = () => {
                       name="name"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Restaurant Name</FormLabel>
+                          <FormLabel className="text-foreground">Restaurant Name</FormLabel>
                           <FormControl>
                             <Input 
                               placeholder="The Tasty Fork" 
                               {...field} 
                               disabled={saving}
+                              className="bg-white/10 border-white/30"
                             />
                           </FormControl>
                           <FormMessage />
@@ -187,12 +190,13 @@ const AdminEdit = () => {
                       name="location"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Location</FormLabel>
+                          <FormLabel className="text-foreground">Location</FormLabel>
                           <FormControl>
                             <Input 
                               placeholder="123 Main St, Anytown, USA" 
                               {...field} 
                               disabled={saving}
+                              className="bg-white/10 border-white/30" 
                             />
                           </FormControl>
                           <FormMessage />
@@ -205,12 +209,13 @@ const AdminEdit = () => {
                       name="contact"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Contact Information</FormLabel>
+                          <FormLabel className="text-foreground">Contact Information</FormLabel>
                           <FormControl>
                             <Input 
                               placeholder="Phone: (123) 456-7890, Email: info@example.com" 
                               {...field} 
                               disabled={saving}
+                              className="bg-white/10 border-white/30" 
                             />
                           </FormControl>
                           <FormMessage />
@@ -225,13 +230,14 @@ const AdminEdit = () => {
                       name="description"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Restaurant Description</FormLabel>
+                          <FormLabel className="text-foreground">Restaurant Description</FormLabel>
                           <FormControl>
                             <Textarea 
                               placeholder="Restaurant description..." 
                               {...field} 
                               disabled={saving}
                               rows={5}
+                              className="bg-white/10 border-white/30"
                             />
                           </FormControl>
                           <FormMessage />
@@ -244,7 +250,7 @@ const AdminEdit = () => {
                         control={form.control}
                         name="isPublic"
                         render={({ field }) => (
-                          <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                          <FormItem className="flex flex-row items-center justify-between rounded-lg border border-white/30 bg-white/10 p-4">
                             <div className="space-y-0.5">
                               <FormLabel className="text-base">Public Status</FormLabel>
                               <FormDescription className="text-sm text-muted-foreground">
@@ -266,7 +272,7 @@ const AdminEdit = () => {
                         control={form.control}
                         name="isBlocked"
                         render={({ field }) => (
-                          <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4 mt-4 border-red-100">
+                          <FormItem className="flex flex-row items-center justify-between rounded-lg border border-red-300/30 bg-red-50/10 p-4 mt-4">
                             <div className="space-y-0.5">
                               <FormLabel className="text-base">Block Restaurant</FormLabel>
                               <FormDescription className="text-sm text-muted-foreground">
@@ -293,12 +299,13 @@ const AdminEdit = () => {
                     variant="outline" 
                     onClick={() => navigate("/admin")}
                     disabled={saving}
+                    className="bg-white/10 border-white/30 hover:bg-white/20"
                   >
                     Cancel
                   </Button>
                   <Button 
                     type="submit"
-                    className="bg-primary hover:bg-primary/90"
+                    className="bg-primary/70 hover:bg-primary/90 backdrop-blur-sm text-white"
                     disabled={saving}
                   >
                     {saving ? (

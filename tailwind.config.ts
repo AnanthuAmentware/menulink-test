@@ -91,12 +91,29 @@ export default {
 					background: 'var(--restaurant-light, #FFFFFF)',
 					text: 'var(--restaurant-dark, #2D2D2D)',
 				},
+				glass: {
+					'light': 'rgba(255, 255, 255, 0.2)',
+					'medium': 'rgba(255, 255, 255, 0.4)',
+					'dark': 'rgba(0, 0, 0, 0.2)',
+				}
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
 				md: 'calc(var(--radius) - 2px)',
 				sm: 'calc(var(--radius) - 4px)',
 				theme: 'var(--border-radius, 0.5rem)'
+			},
+			backdropBlur: {
+				xs: '2px',
+				sm: '4px',
+				md: '8px',
+				lg: '12px',
+				xl: '16px',
+			},
+			boxShadow: {
+				'glass': '0 4px 30px rgba(0, 0, 0, 0.1)',
+				'glass-lg': '0 8px 32px rgba(0, 0, 0, 0.1)',
+				'glass-inset': 'inset 0 2px 4px 0 rgba(255, 255, 255, 0.05)',
 			},
 			keyframes: {
 				'accordion-down': {
@@ -114,11 +131,23 @@ export default {
 					to: {
 						height: '0'
 					}
-				}
+				},
+				'shimmer': {
+					'0%': {
+						backgroundPosition: '-200% 0'
+					},
+					'100%': {
+						backgroundPosition: '200% 0'
+					},
+				},
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'shimmer': 'shimmer 2s infinite linear',
+			},
+			backgroundImage: {
+				'glass-gradient': 'linear-gradient(to bottom right, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.1))',
 			}
 		}
 	},
