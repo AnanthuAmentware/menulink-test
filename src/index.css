@@ -114,52 +114,53 @@
   }
 }
 
-.menu-item-card {
-  @apply bg-gradient-to-br from-white to-restaurant-cream/20;
-}
+@layer components {
+  .menu-item-card {
+    @apply bg-gradient-to-br from-white to-white bg-opacity-20;
+  }
 
-.restaurant-card {
-  @apply border border-restaurant-gold/30 rounded-lg p-6 bg-white shadow-lg hover:shadow-xl transition-all duration-300;
-}
+  .restaurant-card {
+    @apply border border-restaurant-gold/30 rounded-lg p-6 bg-white shadow-lg hover:shadow-xl transition-all duration-300;
+  }
 
-.section-header {
-  @apply border-b-2 border-restaurant-burgundy/30 pb-2 mb-4;
-}
+  .section-header {
+    @apply border-b-2 border-restaurant-burgundy/30 pb-2 mb-4;
+  }
 
-.page-container {
-  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8;
-}
+  .page-container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8;
+  }
 
-.dashboard-container {
-  @apply grid grid-cols-1 md:grid-cols-3 gap-6;
-}
+  .dashboard-container {
+    @apply grid grid-cols-1 md:grid-cols-3 gap-6;
+  }
 
-.dashboard-panel {
-  @apply bg-white p-6 rounded-lg shadow-md border border-gray-100;
-}
+  .dashboard-panel {
+    @apply bg-white p-6 rounded-lg shadow-md border border-gray-100;
+  }
 
-.menu-section {
-  @apply bg-white rounded-lg shadow-md p-6 mb-6 relative border-l-4 border-restaurant-burgundy;
-}
+  .menu-section {
+    @apply bg-white rounded-lg shadow-md p-6 mb-6 relative border-l-4 border-restaurant-burgundy;
+  }
 
-/* Theme-based utility classes */
-.theme-primary-bg {
-  background-color: var(--restaurant-burgundy);
-}
+  /* Theme-based utility classes */
+  .theme-primary-bg {
+    background-color: var(--restaurant-burgundy);
+  }
 
-.theme-primary-text {
-  color: var(--restaurant-burgundy);
-}
+  .theme-primary-text {
+    color: var(--restaurant-burgundy);
+  }
 
-.theme-secondary-bg {
-  background-color: var(--restaurant-cream);
-}
+  .theme-secondary-bg {
+    background-color: var(--restaurant-cream);
+  }
 
-.theme-accent-bg {
-  background-color: var(--restaurant-gold);
-}
+  .theme-accent-bg {
+    background-color: var(--restaurant-gold);
+  }
 
-.theme-gradient {
-  background: linear-gradient(to right, var(--restaurant-burgundy), var(--restaurant-gold));
+  .theme-gradient {
+    background: linear-gradient(to right, var(--restaurant-burgundy), var(--restaurant-gold));
+  }
 }
-
