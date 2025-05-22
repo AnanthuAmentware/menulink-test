@@ -1,5 +1,5 @@
 
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Lato:wght@300;400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Lato:wght@300;400;700&family=Montserrat:wght@400;500;600;700&family=Merriweather:wght@400;700&family=Roboto:wght@300;400;500;700&family=Roboto+Slab:wght@400;500;600;700&family=Open+Sans:wght@400;600&family=Source+Sans+Pro:wght@400;600&family=Nunito:wght@400;600;700&family=Oswald:wght@400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -7,6 +7,7 @@
 
 @layer base {
   :root {
+    /* Base shadcn/ui color scheme */
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
 
@@ -45,6 +46,17 @@
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Theme variables */
+    --primary: var(--primary, 349 73% 35%);
+    --secondary: var(--secondary, 60 56% 91%);
+    --accent: var(--accent, 43 65% 53%);
+    --background-color: var(--background-color, 0 0% 100%);
+    --text-color: var(--text-color, 222.2 84% 4.9%);
+    --heading-color: var(--heading-color, 349 73% 35%);
+    --heading-font: var(--heading-font, 'Playfair Display');
+    --body-font: var(--body-font, 'Lato');
+    --border-radius: var(--border-radius, 0.5rem);
   }
 
   .dark {
@@ -75,6 +87,7 @@
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
+    
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -92,11 +105,12 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans;
+    @apply bg-background text-foreground;
+    font-family: var(--body-font, 'Lato'), sans-serif;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-display;
+    font-family: var(--heading-font, 'Playfair Display'), serif;
   }
 }
 
@@ -127,3 +141,25 @@
 .menu-section {
   @apply bg-white rounded-lg shadow-md p-6 mb-6 relative border-l-4 border-restaurant-burgundy;
 }
+
+/* Theme-based utility classes */
+.theme-primary-bg {
+  background-color: var(--restaurant-burgundy);
+}
+
+.theme-primary-text {
+  color: var(--restaurant-burgundy);
+}
+
+.theme-secondary-bg {
+  background-color: var(--restaurant-cream);
+}
+
+.theme-accent-bg {
+  background-color: var(--restaurant-gold);
+}
+
+.theme-gradient {
+  background: linear-gradient(to right, var(--restaurant-burgundy), var(--restaurant-gold));
+}
+

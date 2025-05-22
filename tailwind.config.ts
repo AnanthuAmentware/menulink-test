@@ -20,8 +20,18 @@ export default {
 		},
 		extend: {
 			fontFamily: {
-				display: ['Playfair Display', 'serif'],
-				sans: ['Lato', 'sans-serif'],
+				display: 'var(--heading-font, "Playfair Display"), serif',
+				sans: 'var(--body-font, "Lato"), sans-serif',
+				'playfair': ['Playfair Display', 'serif'],
+				'lato': ['Lato', 'sans-serif'],
+				'montserrat': ['Montserrat', 'sans-serif'],
+				'merriweather': ['Merriweather', 'serif'],
+				'roboto': ['Roboto', 'sans-serif'],
+				'roboto-slab': ['Roboto Slab', 'serif'],
+				'open-sans': ['Open Sans', 'sans-serif'],
+				'source-sans': ['Source Sans Pro', 'sans-serif'],
+				'nunito': ['Nunito', 'sans-serif'],
+				'oswald': ['Oswald', 'sans-serif'],
 			},
 			colors: {
 				border: 'hsl(var(--border))',
@@ -68,17 +78,25 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				},
 				restaurant: {
-					burgundy: '#8B2635',
-					cream: '#F5F5DC',
-					gold: '#D4AF37',
-					dark: '#2D2D2D',
-					light: '#FFFFFF',
+					burgundy: 'var(--restaurant-burgundy, #8B2635)',
+					cream: 'var(--restaurant-cream, #F5F5DC)',
+					gold: 'var(--restaurant-gold, #D4AF37)',
+					dark: 'var(--restaurant-dark, #2D2D2D)',
+					light: 'var(--restaurant-light, #FFFFFF)',
+				},
+				theme: {
+					primary: 'var(--restaurant-burgundy, #8B2635)',
+					secondary: 'var(--restaurant-cream, #F5F5DC)',
+					accent: 'var(--restaurant-gold, #D4AF37)',
+					background: 'var(--restaurant-light, #FFFFFF)',
+					text: 'var(--restaurant-dark, #2D2D2D)',
 				},
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
 				md: 'calc(var(--radius) - 2px)',
-				sm: 'calc(var(--radius) - 4px)'
+				sm: 'calc(var(--radius) - 4px)',
+				theme: 'var(--border-radius, 0.5rem)'
 			},
 			keyframes: {
 				'accordion-down': {
