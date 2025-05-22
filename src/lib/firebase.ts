@@ -6,7 +6,7 @@ import {
   createUserWithEmailAndPassword,
   signOut as firebaseSignOut,
   onAuthStateChanged,
-  User
+  type User
 } from 'firebase/auth';
 import { 
   getFirestore, 
@@ -58,5 +58,7 @@ export {
   where,
   getDocs,
   Timestamp,
-  User
 };
+
+// Export the User type correctly using 'export type'
+export type { User };

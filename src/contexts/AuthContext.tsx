@@ -1,7 +1,6 @@
-
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { auth, onAuthStateChanged } from '../lib/firebase';
-import { User } from 'firebase/auth';
+import type { User } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
 
 export type UserRole = 'owner' | 'admin' | 'none';
