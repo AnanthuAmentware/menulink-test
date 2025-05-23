@@ -1,10 +1,10 @@
 
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { db, doc, getDoc } from '../lib/firebase';
 import { Card, CardContent } from '@/components/ui/card';
 import { Restaurant } from '@/types';
-import { Phone, MapPin, RefreshCcw } from 'lucide-react';
+import { Phone, MapPin, RefreshCcw, Lock } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const Menu = () => {
@@ -13,6 +13,7 @@ const Menu = () => {
   const [error, setError] = useState<string | null>(null);
   const { restaurantId } = useParams<{ restaurantId: string }>();
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchMenuData = async () => {
@@ -38,6 +39,14 @@ const Menu = () => {
           id: restaurantSnap.id, 
           ...restaurantSnap.data() 
         } as Restaurant;
+        
+        // Check if the restaurant is private
+        if (!restaurantData.isPublic) {
+          console.error("Restaurant is private:", restaurantId);
+          setError("This menu is private");
+          setLoading(false);
+          return;
+        }
         
         console.log("Restaurant data loaded:", restaurantData);
 
@@ -89,6 +98,12 @@ const Menu = () => {
         <Card className="w-full max-w-md text-center p-8 glass-card">
           <h2 className="text-2xl font-bold font-display mb-4 text-restaurant-burgundy">Menu Unavailable</h2>
           <p className="text-gray-600 mb-6">{error || "Menu could not be loaded"}</p>
+          {error === "This menu is private" && (
+            <div className="flex flex-col items-center justify-center gap-2">
+              <Lock className="h-10 w-10 text-gray-500" />
+              <p className="text-gray-500">The restaurant owner has set this menu to private.</p>
+            </div>
+          )}
           <pre className="text-sm text-gray-500 whitespace-pre-wrap">
             Restaurant ID: {restaurantId || 'Not provided'}
           </pre>

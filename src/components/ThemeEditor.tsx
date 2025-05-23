@@ -10,7 +10,8 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import { isColorLight, getContrastColor } from '@/lib/theme-utils';
-import { Save } from 'lucide-react';
+import { Save, Pipette, Check } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 const ThemeEditor = () => {
   const { theme, setTheme, availablePresets } = useTheme();
@@ -18,6 +19,8 @@ const ThemeEditor = () => {
   const [selectedPreset, setSelectedPreset] = useState<string>("custom");
   const [hasChanges, setHasChanges] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [activeColorKey, setActiveColorKey] = useState<keyof typeof workingTheme.colors | null>(null);
+  const [openColorPicker, setOpenColorPicker] = useState(false);
 
   // Reset working theme when the actual theme changes
   useEffect(() => {
@@ -80,13 +83,23 @@ const ThemeEditor = () => {
     setIsSaving(false);
   };
 
+  const openColorPickerDialog = (colorKey: keyof typeof workingTheme.colors) => {
+    setActiveColorKey(colorKey);
+    setOpenColorPicker(true);
+  };
+
   const FontPreview = ({ fontFamily }: { fontFamily: string }) => (
     <span style={{ fontFamily }}>
       {fontFamily}
     </span>
   );
 
-  const ColorSwatch = ({ color, label, onChange }: { color: string, label: string, onChange: (value: string) => void }) => {
+  const ColorSwatch = ({ color, label, onChange, colorKey }: { 
+    color: string, 
+    label: string, 
+    onChange: (value: string) => void,
+    colorKey: keyof typeof workingTheme.colors
+  }) => {
     const textColor = isColorLight(color) ? '#000' : '#fff';
     
     return (
@@ -96,21 +109,10 @@ const ThemeEditor = () => {
           <div
             className="w-12 h-12 rounded-md border shadow-sm cursor-pointer flex items-center justify-center"
             style={{ backgroundColor: color, color: textColor }}
-            onClick={() => {
-              const input = document.getElementById(`color-${label}`) as HTMLInputElement;
-              input?.click();
-              input?.focus();
-            }}
+            onClick={() => openColorPickerDialog(colorKey)}
           >
-            {color}
+            <Pipette className="h-4 w-4" />
           </div>
-          <Input
-            id={`color-${label}`}
-            type="color"
-            value={color}
-            onChange={(e) => onChange(e.target.value)}
-            className="opacity-0 absolute top-0 left-0 w-full h-full cursor-pointer"
-          />
         </div>
       </div>
     );
@@ -137,9 +139,17 @@ const ThemeEditor = () => {
                 <div 
                   key={presetKey}
                   className={`border rounded-lg p-4 cursor-pointer transition-all hover:shadow-md ${selectedPreset === presetKey ? 'ring-2 ring-primary' : ''}`}
-                  onClick={() => handlePresetSelect(presetKey as keyof typeof availablePresets)}
                 >
-                  <div className="font-medium mb-2">{preset.name}</div>
+                  <div className="flex justify-between items-center mb-2">
+                    <div className="font-medium">{preset.name}</div>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => handlePresetSelect(presetKey as keyof typeof availablePresets)}
+                    >
+                      Select
+                    </Button>
+                  </div>
                   <div className="flex space-x-2 mb-3">
                     <div className="w-6 h-6 rounded-full" style={{ backgroundColor: preset.colors.primary }} title="Primary color" />
                     <div className="w-6 h-6 rounded-full" style={{ backgroundColor: preset.colors.secondary }} title="Secondary color" />
@@ -158,12 +168,12 @@ const ThemeEditor = () => {
           <TabsContent value="colors">
             <div className="space-y-6">
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                <ColorSwatch color={workingTheme.colors.primary} label="Primary" onChange={(val) => handleColorChange('primary', val)} />
-                <ColorSwatch color={workingTheme.colors.secondary} label="Secondary" onChange={(val) => handleColorChange('secondary', val)} />
-                <ColorSwatch color={workingTheme.colors.accent} label="Accent" onChange={(val) => handleColorChange('accent', val)} />
-                <ColorSwatch color={workingTheme.colors.background} label="Background" onChange={(val) => handleColorChange('background', val)} />
-                <ColorSwatch color={workingTheme.colors.text} label="Text" onChange={(val) => handleColorChange('text', val)} />
-                <ColorSwatch color={workingTheme.colors.heading} label="Heading" onChange={(val) => handleColorChange('heading', val)} />
+                <ColorSwatch color={workingTheme.colors.primary} label="Primary" onChange={(val) => handleColorChange('primary', val)} colorKey="primary" />
+                <ColorSwatch color={workingTheme.colors.secondary} label="Secondary" onChange={(val) => handleColorChange('secondary', val)} colorKey="secondary" />
+                <ColorSwatch color={workingTheme.colors.accent} label="Accent" onChange={(val) => handleColorChange('accent', val)} colorKey="accent" />
+                <ColorSwatch color={workingTheme.colors.background} label="Background" onChange={(val) => handleColorChange('background', val)} colorKey="background" />
+                <ColorSwatch color={workingTheme.colors.text} label="Text" onChange={(val) => handleColorChange('text', val)} colorKey="text" />
+                <ColorSwatch color={workingTheme.colors.heading} label="Heading" onChange={(val) => handleColorChange('heading', val)} colorKey="heading" />
               </div>
               
               <div className="mt-4">
@@ -324,6 +334,45 @@ const ThemeEditor = () => {
           )}
         </Button>
       </CardFooter>
+
+      {/* Color Picker Dialog */}
+      <Dialog open={openColorPicker} onOpenChange={setOpenColorPicker}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Select Color</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="flex flex-col space-y-2">
+              <Label htmlFor="color-input">Choose a color</Label>
+              <div className="flex gap-2 items-center">
+                <div 
+                  className="w-10 h-10 rounded border" 
+                  style={{ backgroundColor: activeColorKey ? workingTheme.colors[activeColorKey] : '#000000' }}
+                />
+                <Input 
+                  id="color-input"
+                  type="color"
+                  value={activeColorKey ? workingTheme.colors[activeColorKey] : '#000000'}
+                  onChange={(e) => {
+                    if (activeColorKey) {
+                      handleColorChange(activeColorKey, e.target.value);
+                    }
+                  }}
+                />
+              </div>
+            </div>
+            <div>
+              <Button 
+                className="w-full" 
+                onClick={() => setOpenColorPicker(false)}
+              >
+                <Check className="mr-2 h-4 w-4" />
+                Apply Color
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 };
