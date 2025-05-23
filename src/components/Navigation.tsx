@@ -117,7 +117,7 @@ const Navigation = () => {
         </div>
       </div>
 
-      {/* Mobile Navigation */}
+      {/* Mobile Navigation - Updated with white background */}
       {isOpen && (
         <div className="md:hidden bg-white fixed inset-0 z-50 flex flex-col pt-16">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">

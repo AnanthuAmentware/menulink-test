@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { db, doc, getDoc, updateDoc } from '@/lib/firebase';
 import { useAuth } from './AuthContext';
@@ -260,12 +261,18 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
         newTheme.currencySymbol = theme.currencySymbol;
       }
       
+      // Update local state first for immediate feedback
+      setThemeState(newTheme);
+      
       // Save theme to database
       const restaurantRef = doc(db, "restaurants", currentUser.uid);
-      await updateDoc(restaurantRef, { theme: newTheme });
+      await updateDoc(restaurantRef, { 
+        theme: newTheme,
+        // Ensure these fields exist for restaurant viewing
+        isPublic: true,  // Force this to be true to ensure the menu is viewable
+        name: (await getDoc(restaurantRef)).data()?.name || "My Restaurant"
+      });
       
-      // Update local state
-      setThemeState(newTheme);
       toast({
         title: "Theme updated",
         description: "Your restaurant theme has been updated successfully",
