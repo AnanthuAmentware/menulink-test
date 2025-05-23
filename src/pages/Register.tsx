@@ -90,7 +90,8 @@ const Register = () => {
         description: "You've successfully registered your restaurant.",
       });
       
-      // User will be redirected to dashboard by the auth state change
+      // Explicitly navigate to dashboard after successful registration
+      navigate('/dashboard');
       
     } catch (err: any) {
       setIsLoading(false);

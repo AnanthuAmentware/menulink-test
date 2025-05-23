@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useTheme, themePresets, type RestaurantTheme } from '@/contexts/ThemeContext';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -77,16 +76,22 @@ const ThemeEditor = () => {
         <Label htmlFor={`color-${label}`}>{label}</Label>
         <div className="relative flex items-center">
           <div
-            className="w-12 h-12 rounded-md border shadow-sm cursor-pointer"
+            className="w-12 h-12 rounded-md border shadow-sm cursor-pointer flex items-center justify-center"
             style={{ backgroundColor: color, color: textColor }}
-            onClick={() => document.getElementById(`color-${label}`)?.click()}
-          />
+            onClick={() => {
+              const input = document.getElementById(`color-${label}`) as HTMLInputElement;
+              input?.click();
+              input?.focus();
+            }}
+          >
+            {color}
+          </div>
           <Input
             id={`color-${label}`}
             type="color"
             value={color}
             onChange={(e) => onChange(e.target.value)}
-            className="sr-only"
+            className="opacity-0 absolute top-0 left-0 w-full h-full cursor-pointer"
           />
         </div>
       </div>
@@ -276,7 +281,7 @@ const ThemeEditor = () => {
         <Button variant="outline" onClick={() => setWorkingTheme({ ...theme })}>
           Discard Changes
         </Button>
-        <Button onClick={saveTheme}>
+        <Button onClick={saveTheme} className="bg-black text-white hover:bg-black/90">
           Apply Theme
         </Button>
       </CardFooter>

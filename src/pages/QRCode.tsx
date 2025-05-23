@@ -189,13 +189,14 @@ const QRCodePage = () => {
                 </div>
               </CardContent>
               <CardFooter className="flex flex-col space-y-4">
-                <div className="flex items-center space-x-2 w-full">
+                <div className="flex items-center space-x-2 w-full bg-white/10 p-2 rounded-md">
                   <Switch
                     checked={restaurant.isPublic}
                     onCheckedChange={handlePublicToggle}
                     disabled={toggleLoading}
+                    className="data-[state=checked]:bg-primary data-[state=unchecked]:bg-gray-400"
                   />
-                  <Label htmlFor="public-mode">
+                  <Label htmlFor="public-mode" className="text-primary font-medium">
                     {restaurant.isPublic ? "Menu is Public" : "Menu is Private"}
                   </Label>
                 </div>

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { db, doc, getDoc, updateDoc } from "../lib/firebase";
@@ -6,15 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
 import { 
   Dialog, 
   DialogContent, 
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogTitle,
-  DialogTrigger
+  DialogTitle
 } from "@/components/ui/dialog";
 import { MenuSection, MenuItem } from "@/types";
 import { Plus, Trash2, MoveVertical, Save, Edit, RefreshCcw } from "lucide-react";
@@ -436,6 +433,9 @@ const MenuBuilder = () => {
     const updatedSections = [...menuSections];
     const section = { ...updatedSections[sectionIndex] };
 
+    // Image URL is optional - if empty, use undefined
+    const imageUrl = itemImageUrl.trim() || "";
+
     if (currentItem) {
       // Edit existing item
       const updatedItems = section.items.map(item =>
@@ -445,7 +445,7 @@ const MenuBuilder = () => {
               name: itemName,
               description: itemDescription,
               price,
-              imageUrl: itemImageUrl || undefined
+              imageUrl
             }
           : item
       );
@@ -464,7 +464,7 @@ const MenuBuilder = () => {
         name: itemName,
         description: itemDescription,
         price,
-        imageUrl: itemImageUrl || undefined
+        imageUrl
       };
       
       section.items = [...section.items, newItem];
@@ -555,7 +555,7 @@ const MenuBuilder = () => {
           <Button
             onClick={handleSaveMenu}
             disabled={saving || !menuChanged}
-            className="flex items-center bg-primary/80 hover:bg-primary backdrop-blur-sm"
+            className="flex items-center bg-black text-white hover:bg-black/90 backdrop-blur-sm"
           >
             {saving ? (
               <>
@@ -650,7 +650,7 @@ const MenuBuilder = () => {
             </Button>
             <Button 
               onClick={handleSaveSection}
-              className="bg-primary/80 hover:bg-primary"
+              className="bg-primary text-white hover:bg-primary/90"
             >
               {currentSection ? "Update Section" : "Add Section"}
             </Button>
@@ -660,7 +660,7 @@ const MenuBuilder = () => {
 
       {/* Item Dialog */}
       <Dialog open={itemDialogOpen} onOpenChange={setItemDialogOpen}>
-        <DialogContent className="glass-dialog sm:max-w-[500px]">
+        <DialogContent className="glass-dialog sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
               {currentItem ? "Edit Menu Item" : "Add Menu Item"}
@@ -725,8 +725,24 @@ const MenuBuilder = () => {
                 placeholder="https://example.com/image.jpg"
               />
               <p className="text-xs text-gray-400">
-                For best results, use square images (1:1 aspect ratio)
+                Images are optional. For best results, use square images (1:1 aspect ratio)
               </p>
+              
+              {itemImageUrl && (
+                <div className="mt-2 border rounded-md p-2">
+                  <p className="text-xs font-medium mb-1">Image Preview:</p>
+                  <div className="aspect-square w-24 h-24 overflow-hidden rounded-md bg-gray-100">
+                    <img 
+                      src={itemImageUrl} 
+                      alt="Preview" 
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.currentTarget.src = "https://placehold.co/200x200?text=Invalid+Image";
+                      }} 
+                    />
+                  </div>
+                </div>
+              )}
             </div>
           </div>
           
@@ -736,7 +752,7 @@ const MenuBuilder = () => {
             </Button>
             <Button 
               onClick={handleSaveItem}
-              className="bg-primary/80 hover:bg-primary"
+              className="bg-primary text-white hover:bg-primary/90"
             >
               {currentItem ? "Update Item" : "Add Item"}
             </Button>

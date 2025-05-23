@@ -2,6 +2,7 @@
 import React from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 import ThemeEditor from '@/components/ThemeEditor';
+import CurrencyConfigurator from '@/components/CurrencyConfigurator';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
@@ -25,11 +26,16 @@ const ThemeCustomization = () => {
         <Tabs defaultValue="editor" className="glass-card p-4">
           <TabsList className="mb-6 bg-white/10 border border-white/20">
             <TabsTrigger value="editor" className="data-[state=active]:bg-white/20">Theme Editor</TabsTrigger>
+            <TabsTrigger value="currency" className="data-[state=active]:bg-white/20">Currency</TabsTrigger>
             <TabsTrigger value="export" className="data-[state=active]:bg-white/20">Export/Import</TabsTrigger>
           </TabsList>
           
           <TabsContent value="editor">
             <ThemeEditor />
+          </TabsContent>
+          
+          <TabsContent value="currency">
+            <CurrencyConfigurator />
           </TabsContent>
           
           <TabsContent value="export">

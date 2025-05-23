@@ -23,6 +23,7 @@ export type RestaurantTheme = {
   fonts: FontSettings;
   borderRadius: string;
   isDark: boolean;
+  currencySymbol?: string;
 };
 
 // Default theme presets
@@ -42,7 +43,8 @@ export const themePresets = {
       bodyFont: "Lato"
     },
     borderRadius: "0.5rem",
-    isDark: false
+    isDark: false,
+    currencySymbol: "$"
   },
   dark: {
     name: "Dark Elegance",
@@ -59,7 +61,8 @@ export const themePresets = {
       bodyFont: "Lato"
     },
     borderRadius: "0.5rem",
-    isDark: true
+    isDark: true,
+    currencySymbol: "$"
   },
   modern: {
     name: "Modern",
@@ -76,7 +79,8 @@ export const themePresets = {
       bodyFont: "Open Sans"
     },
     borderRadius: "0.75rem",
-    isDark: false
+    isDark: false,
+    currencySymbol: "$"
   },
   rustic: {
     name: "Rustic",
@@ -93,7 +97,44 @@ export const themePresets = {
       bodyFont: "Roboto"
     },
     borderRadius: "0.25rem",
-    isDark: false
+    isDark: false,
+    currencySymbol: "$"
+  },
+  elegant: {
+    name: "Elegant",
+    colors: {
+      primary: "#4A148C",
+      secondary: "#F3E5F5",
+      accent: "#AA00FF",
+      background: "#FFFFFF",
+      text: "#212121",
+      heading: "#4A148C"
+    },
+    fonts: {
+      headingFont: "Playfair Display",
+      bodyFont: "Lato"
+    },
+    borderRadius: "0.5rem",
+    isDark: false,
+    currencySymbol: "$"
+  },
+  bistro: {
+    name: "Bistro",
+    colors: {
+      primary: "#B71C1C",
+      secondary: "#FFEBEE",
+      accent: "#FF8A80",
+      background: "#FFF8E1",
+      text: "#3E2723",
+      heading: "#B71C1C"
+    },
+    fonts: {
+      headingFont: "Oswald",
+      bodyFont: "Source Sans Pro"
+    },
+    borderRadius: "0.25rem",
+    isDark: false,
+    currencySymbol: "$"
   }
 };
 
@@ -105,6 +146,8 @@ interface ThemeContextProps {
   availablePresets: typeof themePresets;
   applyPreset: (presetName: keyof typeof themePresets) => Promise<void>;
   getCssVariable: (name: string) => string;
+  loadThemeForRestaurant: (restaurantId: string) => Promise<RestaurantTheme | null>;
+  setCurrencySymbol: (symbol: string) => Promise<void>;
 }
 
 const ThemeContext = createContext<ThemeContextProps>({
@@ -115,6 +158,8 @@ const ThemeContext = createContext<ThemeContextProps>({
   availablePresets: themePresets,
   applyPreset: async () => {},
   getCssVariable: () => '',
+  loadThemeForRestaurant: async () => null,
+  setCurrencySymbol: async () => {},
 });
 
 export const useTheme = () => useContext(ThemeContext);
@@ -210,6 +255,11 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
     }
 
     try {
+      // Preserve currency symbol from current theme if not specified in new theme
+      if (!newTheme.currencySymbol && theme.currencySymbol) {
+        newTheme.currencySymbol = theme.currencySymbol;
+      }
+      
       // Save theme to database
       const restaurantRef = doc(db, "restaurants", currentUser.uid);
       await updateDoc(restaurantRef, { theme: newTheme });
@@ -237,12 +287,73 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
   const applyPreset = async (presetName: keyof typeof themePresets) => {
     const preset = themePresets[presetName];
     if (preset) {
-      await setTheme(preset);
+      // Preserve currency symbol when applying preset
+      const updatedPreset = {
+        ...preset,
+        currencySymbol: theme.currencySymbol || preset.currencySymbol || "$"
+      };
+      await setTheme(updatedPreset);
+    }
+  };
+
+  const setCurrencySymbol = async (symbol: string) => {
+    if (!currentUser) {
+      toast({
+        title: "Not authenticated",
+        description: "You need to be logged in to save theme changes",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const updatedTheme = {
+        ...theme,
+        currencySymbol: symbol
+      };
+      
+      // Save updated theme to database
+      const restaurantRef = doc(db, "restaurants", currentUser.uid);
+      await updateDoc(restaurantRef, { theme: updatedTheme });
+      
+      // Update local state
+      setThemeState(updatedTheme);
+      toast({
+        title: "Currency updated",
+        description: `Currency symbol set to ${symbol}`,
+      });
+    } catch (error) {
+      console.error("Error saving currency symbol:", error);
+      toast({
+        title: "Error saving currency",
+        description: "Failed to update currency symbol",
+        variant: "destructive",
+      });
     }
   };
 
   const getCssVariable = (name: string) => {
     return getComputedStyle(document.documentElement).getPropertyValue(`--${name}`).trim();
+  };
+
+  // Function to load theme for public menu viewing
+  const loadThemeForRestaurant = async (restaurantId: string): Promise<RestaurantTheme | null> => {
+    try {
+      const restaurantDoc = doc(db, "restaurants", restaurantId);
+      const restaurantSnap = await getDoc(restaurantDoc);
+      
+      if (restaurantSnap.exists() && restaurantSnap.data().theme) {
+        const restaurantTheme = restaurantSnap.data().theme as RestaurantTheme;
+        
+        // Apply theme immediately for menu view
+        setThemeState(restaurantTheme);
+        return restaurantTheme;
+      }
+      return themePresets.default;
+    } catch (error) {
+      console.error("Error loading restaurant theme:", error);
+      return null;
+    }
   };
 
   const value = {
@@ -253,6 +364,8 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
     availablePresets: themePresets,
     applyPreset,
     getCssVariable,
+    loadThemeForRestaurant,
+    setCurrencySymbol,
   };
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;

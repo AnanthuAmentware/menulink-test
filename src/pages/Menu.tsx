@@ -1,167 +1,195 @@
-
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { db, doc, getDoc } from '../lib/firebase';
-import { Card, CardContent } from '@/components/ui/card';
-import { Restaurant } from '@/types';
-import { Phone, MapPin, RefreshCcw } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { useTheme } from '@/contexts/ThemeContext';
+import { Card } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { RefreshCcw } from 'lucide-react';
+
+interface RestaurantData {
+  id: string;
+  name: string;
+  description?: string;
+  isPublic: boolean;
+  menuSections: any[];
+  currencySymbol?: string; // Make currency configurable
+  [key: string]: any;
+}
 
 const Menu = () => {
-  const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
+  const [restaurant, setRestaurant] = useState<RestaurantData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { restaurantId } = useParams<{ restaurantId: string }>();
-  const { toast } = useToast();
+  const { theme } = useTheme();
 
   useEffect(() => {
-    const fetchMenuData = async () => {
+    const fetchRestaurant = async () => {
       if (!restaurantId) {
-        setError("Restaurant ID is missing");
+        setError('Restaurant ID is missing');
         setLoading(false);
         return;
       }
 
       try {
         const restaurantDoc = await getDoc(doc(db, 'restaurants', restaurantId));
-
-        if (!restaurantDoc.exists()) {
-          setError("Restaurant not found");
-          setLoading(false);
-          return;
+        
+        if (restaurantDoc.exists()) {
+          const data = restaurantDoc.data() as RestaurantData;
+          
+          if (!data.isPublic) {
+            setError('This menu is not available to the public');
+            setLoading(false);
+            return;
+          }
+          
+          // Load restaurant theme if available
+          if (data.theme) {
+            // Apply the restaurant's theme
+            const { loadThemeForRestaurant } = useTheme();
+            await loadThemeForRestaurant(restaurantId);
+          }
+          
+          setRestaurant({ id: restaurantDoc.id, ...data });
+        } else {
+          setError('Restaurant not found');
         }
-
-        const restaurantData = { id: restaurantDoc.id, ...restaurantDoc.data() } as Restaurant;
-
-        // Check if restaurant is public and not blocked
-        if (!restaurantData.isPublic) {
-          setError("This menu is currently private");
-          setLoading(false);
-          return;
-        }
-
-        if (restaurantData.isBlocked) {
-          setError("This menu is not available");
-          setLoading(false);
-          return;
-        }
-
-        setRestaurant(restaurantData);
       } catch (err) {
-        console.error("Error fetching menu data:", err);
-        setError("Failed to load menu data");
+        console.error('Error fetching restaurant:', err);
+        setError('Failed to load restaurant data');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchMenuData();
-  }, [restaurantId, toast]);
+    fetchRestaurant();
+  }, [restaurantId]);
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4 bg-restaurant-cream/10">
-        <div className="text-center">
-          <RefreshCcw className="h-10 w-10 mx-auto animate-spin text-restaurant-burgundy" />
-          <p className="mt-4 text-xl">Loading menu...</p>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="flex flex-col items-center">
+          <RefreshCcw className="h-10 w-10 animate-spin text-primary" />
+          <p className="mt-4 text-lg">Loading menu...</p>
         </div>
       </div>
     );
   }
 
-  if (error || !restaurant) {
+  if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4 bg-restaurant-cream/10">
-        <Card className="w-full max-w-md text-center p-8">
-          <h2 className="text-2xl font-bold font-display mb-4 text-restaurant-burgundy">Menu Unavailable</h2>
-          <p className="text-gray-600 mb-6">{error || "Menu could not be loaded"}</p>
-          <p className="text-sm text-gray-500">Please contact the restaurant for more information</p>
-        </Card>
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <Alert variant="destructive" className="max-w-md">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
       </div>
     );
   }
+
+  // Get currency symbol from restaurant data or theme, defaulting to $
+  const currencySymbol = restaurant?.currencySymbol || theme?.currencySymbol || '$';
 
   return (
-    <div className="min-h-screen bg-restaurant-cream/10 p-4 md:p-6 lg:p-8">
-      <div className="max-w-4xl mx-auto">
-        {/* Restaurant Header */}
-        <div className="bg-white shadow-lg rounded-lg p-6 mb-8 border-t-4 border-restaurant-burgundy">
-          <h1 className="text-3xl md:text-4xl font-bold font-display text-restaurant-burgundy mb-2">{restaurant.name}</h1>
-          
-          <div className="flex flex-wrap gap-2 text-sm text-gray-600 mb-4">
-            {restaurant.location && (
-              <div className="flex items-center">
-                <MapPin className="h-4 w-4 mr-1" />
-                <span>{restaurant.location}</span>
-              </div>
-            )}
-            {restaurant.contact && (
-              <div className="flex items-center">
-                <Phone className="h-4 w-4 mr-1" />
-                <span>{restaurant.contact}</span>
-              </div>
-            )}
-          </div>
-          
-          {restaurant.description && (
-            <p className="text-gray-700">{restaurant.description}</p>
-          )}
-        </div>
+    <div className="min-h-screen">
+      {/* Restaurant Header */}
+      <div 
+        className="bg-primary/80 text-white py-8 px-4 text-center"
+        style={{ 
+          backgroundColor: theme ? `hsla(${theme.colors.primary}, 0.8)` : undefined,
+          color: theme ? theme.colors.text : undefined
+        }}
+      >
+        <h1 className="text-4xl font-bold mb-2" style={{ fontFamily: theme ? theme.fonts.headingFont : undefined }}>
+          {restaurant?.name}
+        </h1>
+        {restaurant?.description && (
+          <p className="max-w-2xl mx-auto opacity-90" style={{ fontFamily: theme ? theme.fonts.bodyFont : undefined }}>
+            {restaurant.description}
+          </p>
+        )}
+      </div>
 
-        {/* Menu Sections */}
-        {restaurant.menuSections && restaurant.menuSections.length > 0 ? (
-          restaurant.menuSections.map((section) => (
-            <div key={section.id} className="menu-section mb-8">
-              <h2 className="text-2xl font-bold font-display section-header">{section.name}</h2>
+      {/* Menu Sections */}
+      <div className="max-w-4xl mx-auto py-8 px-4">
+        {restaurant?.menuSections?.length > 0 ? (
+          restaurant.menuSections.map((section: any) => (
+            <div key={section.id} className="mb-10">
+              <h2 
+                className="text-2xl font-bold mb-4 pb-2 border-b"
+                style={{ 
+                  color: theme ? theme.colors.heading : undefined,
+                  fontFamily: theme ? theme.fonts.headingFont : undefined,
+                  borderColor: theme ? `hsla(${theme.colors.primary}, 0.3)` : undefined
+                }}
+              >
+                {section.name}
+              </h2>
               
-              <div className="grid gap-4 sm:grid-cols-1 lg:grid-cols-2">
-                {section.items.map((item) => (
-                  <Card key={item.id} className="menu-item-card overflow-hidden">
-                    <CardContent className="p-0">
-                      <div className="p-4">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <h3 className="font-bold text-lg">{item.name}</h3>
-                            <p className="text-gray-600 text-sm mt-1">{item.description}</p>
-                          </div>
-                          <div className="text-restaurant-burgundy font-bold">
-                            ${item.price.toFixed(2)}
-                          </div>
+              <div className="grid gap-4 md:grid-cols-2">
+                {section.items?.map((item: any) => (
+                  <Card 
+                    key={item.id} 
+                    className="overflow-hidden hover:shadow-lg transition-shadow"
+                    style={{ 
+                      borderRadius: theme ? theme.borderRadius : undefined,
+                      backgroundColor: theme ? theme.colors.background : undefined,
+                    }}
+                  >
+                    <div className="flex p-4">
+                      {item.imageUrl && (
+                        <div className="flex-shrink-0 mr-4">
+                          <img 
+                            src={item.imageUrl} 
+                            alt={item.name} 
+                            className="w-20 h-20 object-cover rounded"
+                            style={{ borderRadius: theme ? theme.borderRadius : undefined }}
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none';
+                            }}
+                          />
                         </div>
-                        
-                        {item.imageUrl && (
-                          <div className="mt-3">
-                            <img
-                              src={item.imageUrl}
-                              alt={item.name}
-                              className="rounded-md w-full h-32 object-cover"
-                            />
-                          </div>
+                      )}
+                      <div className="flex-grow">
+                        <div className="flex justify-between items-start mb-1">
+                          <h3 
+                            className="text-lg font-semibold"
+                            style={{ 
+                              color: theme ? theme.colors.heading : undefined,
+                              fontFamily: theme ? theme.fonts.headingFont : undefined
+                            }}
+                          >
+                            {item.name}
+                          </h3>
+                          <span 
+                            className="font-bold"
+                            style={{ color: theme ? theme.colors.primary : undefined }}
+                          >
+                            {currencySymbol}{item.price.toFixed(2)}
+                          </span>
+                        </div>
+                        {item.description && (
+                          <p 
+                            className="text-sm"
+                            style={{ 
+                              color: theme ? theme.colors.text : undefined,
+                              fontFamily: theme ? theme.fonts.bodyFont : undefined
+                            }}
+                          >
+                            {item.description}
+                          </p>
                         )}
                       </div>
-                    </CardContent>
+                    </div>
                   </Card>
                 ))}
               </div>
-              
-              {section.items.length === 0 && (
-                <p className="text-gray-500 italic text-center py-4">No items in this section</p>
-              )}
             </div>
           ))
         ) : (
-          <div className="text-center py-12 bg-white rounded-lg shadow">
-            <h2 className="text-2xl font-semibold font-display mb-2">Menu Coming Soon</h2>
-            <p className="text-gray-600">
-              This restaurant is still setting up their digital menu.
-            </p>
+          <div className="text-center py-20">
+            <p className="text-xl text-gray-500">This menu has no items yet.</p>
           </div>
         )}
-        
-        {/* Footer */}
-        <div className="text-center text-sm text-gray-500 mt-12 mb-6">
-          <p>Menu powered by MenuBuilder</p>
-        </div>
       </div>
     </div>
   );
