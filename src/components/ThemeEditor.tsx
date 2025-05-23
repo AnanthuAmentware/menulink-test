@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { useTheme, themePresets, type RestaurantTheme } from '@/contexts/ThemeContext';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,11 +10,20 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import { isColorLight, getContrastColor } from '@/lib/theme-utils';
+import { Save } from 'lucide-react';
 
 const ThemeEditor = () => {
-  const { theme, setTheme, availablePresets, applyPreset } = useTheme();
+  const { theme, setTheme, availablePresets } = useTheme();
   const [workingTheme, setWorkingTheme] = useState<RestaurantTheme>({ ...theme });
   const [selectedPreset, setSelectedPreset] = useState<string>("custom");
+  const [hasChanges, setHasChanges] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Reset working theme when the actual theme changes
+  useEffect(() => {
+    setWorkingTheme({ ...theme });
+    setHasChanges(false);
+  }, [theme]);
 
   const handleColorChange = (colorKey: keyof typeof workingTheme.colors, value: string) => {
     setWorkingTheme(prev => ({
@@ -24,6 +34,7 @@ const ThemeEditor = () => {
       }
     }));
     setSelectedPreset("custom");
+    setHasChanges(true);
   };
 
   const handleFontChange = (fontKey: keyof typeof workingTheme.fonts, value: string) => {
@@ -35,6 +46,7 @@ const ThemeEditor = () => {
       }
     }));
     setSelectedPreset("custom");
+    setHasChanges(true);
   };
 
   const handleBorderRadiusChange = (value: string) => {
@@ -43,6 +55,7 @@ const ThemeEditor = () => {
       borderRadius: value
     }));
     setSelectedPreset("custom");
+    setHasChanges(true);
   };
 
   const handleDarkModeChange = (isDark: boolean) => {
@@ -51,15 +64,20 @@ const ThemeEditor = () => {
       isDark
     }));
     setSelectedPreset("custom");
+    setHasChanges(true);
   };
 
   const handlePresetSelect = (presetName: keyof typeof availablePresets) => {
     setSelectedPreset(presetName);
     setWorkingTheme({ ...availablePresets[presetName] });
+    setHasChanges(true);
   };
 
   const saveTheme = async () => {
+    setIsSaving(true);
     await setTheme(workingTheme);
+    setHasChanges(false);
+    setIsSaving(false);
   };
 
   const FontPreview = ({ fontFamily }: { fontFamily: string }) => (
@@ -278,11 +296,32 @@ const ThemeEditor = () => {
       </CardContent>
       
       <CardFooter className="flex justify-between">
-        <Button variant="outline" onClick={() => setWorkingTheme({ ...theme })}>
+        <Button 
+          variant="outline" 
+          onClick={() => {
+            setWorkingTheme({ ...theme });
+            setHasChanges(false);
+          }}
+          disabled={isSaving}
+        >
           Discard Changes
         </Button>
-        <Button onClick={saveTheme} className="bg-black text-white hover:bg-black/90">
-          Apply Theme
+        <Button 
+          onClick={saveTheme} 
+          className={`${!hasChanges ? 'bg-gray-400 hover:bg-gray-500' : 'bg-black hover:bg-black/90'} text-white flex items-center gap-2`}
+          disabled={!hasChanges || isSaving}
+        >
+          {isSaving ? (
+            <>
+              <span className="animate-spin">⟳</span>
+              Saving...
+            </>
+          ) : (
+            <>
+              <Save className="h-4 w-4" />
+              Apply Theme
+            </>
+          )}
         </Button>
       </CardFooter>
     </Card>

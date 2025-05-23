@@ -27,7 +27,7 @@ export type RestaurantTheme = {
   currencySymbol?: string;
 };
 
-// Default theme presets
+// Default theme presets with currency symbol
 export const themePresets = {
   default: {
     name: "Default",
@@ -45,7 +45,7 @@ export const themePresets = {
     },
     borderRadius: "0.5rem",
     isDark: false,
-    currencySymbol: "$"
+    currencySymbol: "₹"
   },
   dark: {
     name: "Dark Elegance",
@@ -63,7 +63,7 @@ export const themePresets = {
     },
     borderRadius: "0.5rem",
     isDark: true,
-    currencySymbol: "$"
+    currencySymbol: "₹"
   },
   modern: {
     name: "Modern",
@@ -81,7 +81,7 @@ export const themePresets = {
     },
     borderRadius: "0.75rem",
     isDark: false,
-    currencySymbol: "$"
+    currencySymbol: "₹"
   },
   rustic: {
     name: "Rustic",
@@ -99,7 +99,7 @@ export const themePresets = {
     },
     borderRadius: "0.25rem",
     isDark: false,
-    currencySymbol: "$"
+    currencySymbol: "₹"
   },
   elegant: {
     name: "Elegant",
@@ -117,7 +117,7 @@ export const themePresets = {
     },
     borderRadius: "0.5rem",
     isDark: false,
-    currencySymbol: "$"
+    currencySymbol: "₹"
   },
   bistro: {
     name: "Bistro",
@@ -135,7 +135,7 @@ export const themePresets = {
     },
     borderRadius: "0.25rem",
     isDark: false,
-    currencySymbol: "$"
+    currencySymbol: "₹"
   }
 };
 
@@ -184,7 +184,12 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
           const restaurantSnap = await getDoc(restaurantDoc);
           
           if (restaurantSnap.exists() && restaurantSnap.data().theme) {
-            setThemeState(restaurantSnap.data().theme);
+            const loadedTheme = restaurantSnap.data().theme;
+            // Ensure currency symbol exists
+            if (!loadedTheme.currencySymbol) {
+              loadedTheme.currencySymbol = "₹";
+            }
+            setThemeState(loadedTheme);
           } else {
             // Use default theme if no theme is saved
             setThemeState(themePresets.default);
@@ -232,6 +237,7 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
 
     // Other theme properties
     setThemeVariable('border-radius', theme.borderRadius);
+    setThemeVariable('currency-symbol', theme.currencySymbol || '₹');
 
     // Set restaurant-specific colors
     setThemeVariable('restaurant-burgundy', theme.colors.primary);
@@ -297,7 +303,7 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
       // Preserve currency symbol when applying preset
       const updatedPreset = {
         ...preset,
-        currencySymbol: theme.currencySymbol || preset.currencySymbol || "$"
+        currencySymbol: theme.currencySymbol || preset.currencySymbol || "₹"
       };
       await setTheme(updatedPreset);
     }
@@ -319,12 +325,13 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
         currencySymbol: symbol
       };
       
+      // Update local state first for immediate feedback
+      setThemeState(updatedTheme);
+      
       // Save updated theme to database
       const restaurantRef = doc(db, "restaurants", currentUser.uid);
       await updateDoc(restaurantRef, { theme: updatedTheme });
       
-      // Update local state
-      setThemeState(updatedTheme);
       toast({
         title: "Currency updated",
         description: `Currency symbol set to ${symbol}`,
@@ -351,6 +358,11 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
       
       if (restaurantSnap.exists() && restaurantSnap.data().theme) {
         const restaurantTheme = restaurantSnap.data().theme as RestaurantTheme;
+        
+        // Ensure the theme has a currency symbol
+        if (!restaurantTheme.currencySymbol) {
+          restaurantTheme.currencySymbol = "₹";
+        }
         
         // Apply theme immediately for menu view
         setThemeState(restaurantTheme);

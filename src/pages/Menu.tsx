@@ -5,14 +5,12 @@ import { db, doc, getDoc } from '../lib/firebase';
 import { Card, CardContent } from '@/components/ui/card';
 import { Restaurant } from '@/types';
 import { Phone, MapPin, RefreshCcw } from 'lucide-react';
-import { useTheme } from '@/contexts/ThemeContext';
 
 const Menu = () => {
   const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { restaurantId } = useParams<{ restaurantId: string }>();
-  const { loadThemeForRestaurant } = useTheme();
 
   useEffect(() => {
     const fetchMenuData = async () => {
@@ -38,13 +36,27 @@ const Menu = () => {
           id: restaurantSnap.id, 
           ...restaurantSnap.data() 
         } as Restaurant;
-
-        // Load the theme
-        await loadThemeForRestaurant(restaurantId);
         
         console.log("Restaurant data loaded:", restaurantData);
 
         setRestaurant(restaurantData);
+
+        // Apply theme variables
+        const root = document.documentElement;
+        const theme = restaurantData.theme;
+        
+        if (theme) {
+          // Colors
+          root.style.setProperty('--restaurant-burgundy', theme.colors.primary);
+          root.style.setProperty('--restaurant-cream', theme.colors.secondary);
+          root.style.setProperty('--restaurant-gold', theme.colors.accent);
+          root.style.setProperty('--restaurant-dark', theme.colors.text);
+          root.style.setProperty('--restaurant-light', theme.colors.background);
+          
+          // Currency symbol
+          root.style.setProperty('--currency-symbol', theme.currencySymbol || '₹');
+        }
+
       } catch (err) {
         console.error("Error fetching menu data:", err);
         setError("Failed to load menu data");
@@ -54,7 +66,7 @@ const Menu = () => {
     };
 
     fetchMenuData();
-  }, [restaurantId, loadThemeForRestaurant]);
+  }, [restaurantId]);
 
   if (loading) {
     return (
@@ -83,6 +95,8 @@ const Menu = () => {
 
   // Handle undefined menuSections
   const menuSections = restaurant.menuSections || [];
+  // Get currency symbol from theme or use default
+  const currencySymbol = restaurant.theme?.currencySymbol || '₹';
 
   return (
     <div className="min-h-screen bg-restaurant-cream/10 p-4 md:p-6 lg:p-8">
@@ -142,7 +156,7 @@ const Menu = () => {
                               </p>
                             </div>
                             <div className="font-bold text-restaurant-burgundy">
-                              ${item.price.toFixed(2)}
+                              {currencySymbol}{item.price.toFixed(2)}
                             </div>
                           </div>
                           
