@@ -138,17 +138,26 @@ const ThemeEditor = () => {
               {Object.entries(availablePresets).map(([presetKey, preset]) => (
                 <div 
                   key={presetKey}
-                  className={`border rounded-lg p-4 cursor-pointer transition-all hover:shadow-md ${selectedPreset === presetKey ? 'ring-2 ring-primary' : ''}`}
+                  className={`border rounded-lg p-4 cursor-pointer transition-all ${selectedPreset === presetKey ? 'ring-2 ring-primary bg-primary/10' : 'hover:shadow-md'}`}
                 >
                   <div className="flex justify-between items-center mb-2">
                     <div className="font-medium">{preset.name}</div>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={() => handlePresetSelect(presetKey as keyof typeof availablePresets)}
-                    >
-                      Select
-                    </Button>
+                    {selectedPreset === presetKey ? (
+                      <Button 
+                        className="bg-black text-white hover:bg-black/80" 
+                        size="sm"
+                      >
+                        <Check className="h-4 w-4 mr-1" /> Selected
+                      </Button>
+                    ) : (
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={() => handlePresetSelect(presetKey as keyof typeof availablePresets)}
+                      >
+                        Select
+                      </Button>
+                    )}
                   </div>
                   <div className="flex space-x-2 mb-3">
                     <div className="w-6 h-6 rounded-full" style={{ backgroundColor: preset.colors.primary }} title="Primary color" />
@@ -205,9 +214,31 @@ const ThemeEditor = () => {
                   }} className="text-xl font-bold mb-2">
                     Menu Preview
                   </h4>
-                  <p style={{ fontFamily: workingTheme.fonts.bodyFont }} className="mb-3">
-                    This is how your content will look with the selected color theme.
-                  </p>
+                  
+                  {/* Menu Item Preview Example */}
+                  <div className="mb-4 border rounded-md p-3" style={{ borderColor: workingTheme.colors.secondary }}>
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h5 style={{ 
+                          color: workingTheme.colors.heading,
+                          fontFamily: workingTheme.fonts.headingFont 
+                        }} className="font-bold">
+                          Italian Pizza
+                        </h5>
+                        <p style={{ fontFamily: workingTheme.fonts.bodyFont }} className="text-sm mt-1">
+                          Fresh tomato sauce, mozzarella, basil, olive oil
+                        </p>
+                      </div>
+                      <div style={{ 
+                        color: workingTheme.colors.primary,
+                        fontFamily: workingTheme.fonts.headingFont,
+                        fontWeight: "bold" 
+                      }}>
+                        {workingTheme.currencySymbol || "₹"}12.99
+                      </div>
+                    </div>
+                  </div>
+                  
                   <div className="flex space-x-2">
                     <button 
                       style={{ 

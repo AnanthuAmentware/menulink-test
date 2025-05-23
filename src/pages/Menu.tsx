@@ -41,7 +41,7 @@ const Menu = () => {
         } as Restaurant;
         
         // Check if the restaurant is private
-        if (!restaurantData.isPublic) {
+        if (restaurantData.isPublic === false) {
           console.error("Restaurant is private:", restaurantId);
           setError("This menu is private");
           setLoading(false);
@@ -64,9 +64,9 @@ const Menu = () => {
           
           // Currency symbol
           if (restaurantData.theme.currencySymbol) {
-            root.style.setProperty('--currency-symbol', restaurantData.theme.currencySymbol);
+            root.style.setProperty('--currency-symbol', `"${restaurantData.theme.currencySymbol}"`);
           } else {
-            root.style.setProperty('--currency-symbol', '₹'); // Default to Rupees
+            root.style.setProperty('--currency-symbol', '"₹"'); // Default to Rupees
           }
         }
 
@@ -113,9 +113,9 @@ const Menu = () => {
   }
 
   // Handle undefined menuSections
-  const menuSections = restaurant.menuSections || [];
+  const menuSections = restaurant?.menuSections || [];
   // Get currency symbol from theme or use default
-  const currencySymbol = restaurant.theme?.currencySymbol || '₹';
+  const currencySymbol = restaurant?.theme?.currencySymbol || '₹';
 
   return (
     <div className="min-h-screen bg-restaurant-cream/10 p-4 md:p-6 lg:p-8">
