@@ -5,12 +5,14 @@ import { db, doc, getDoc } from '../lib/firebase';
 import { Card, CardContent } from '@/components/ui/card';
 import { Restaurant } from '@/types';
 import { Phone, MapPin, RefreshCcw } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 const Menu = () => {
   const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { restaurantId } = useParams<{ restaurantId: string }>();
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchMenuData = async () => {
@@ -43,18 +45,20 @@ const Menu = () => {
 
         // Apply theme variables
         const root = document.documentElement;
-        const theme = restaurantData.theme;
-        
-        if (theme) {
+        if (restaurantData.theme) {
           // Colors
-          root.style.setProperty('--restaurant-burgundy', theme.colors.primary);
-          root.style.setProperty('--restaurant-cream', theme.colors.secondary);
-          root.style.setProperty('--restaurant-gold', theme.colors.accent);
-          root.style.setProperty('--restaurant-dark', theme.colors.text);
-          root.style.setProperty('--restaurant-light', theme.colors.background);
+          root.style.setProperty('--restaurant-burgundy', restaurantData.theme.colors.primary);
+          root.style.setProperty('--restaurant-cream', restaurantData.theme.colors.secondary);
+          root.style.setProperty('--restaurant-gold', restaurantData.theme.colors.accent);
+          root.style.setProperty('--restaurant-dark', restaurantData.theme.colors.text);
+          root.style.setProperty('--restaurant-light', restaurantData.theme.colors.background);
           
           // Currency symbol
-          root.style.setProperty('--currency-symbol', theme.currencySymbol || '₹');
+          if (restaurantData.theme.currencySymbol) {
+            root.style.setProperty('--currency-symbol', restaurantData.theme.currencySymbol);
+          } else {
+            root.style.setProperty('--currency-symbol', '₹'); // Default to Rupees
+          }
         }
 
       } catch (err) {
@@ -160,7 +164,8 @@ const Menu = () => {
                             </div>
                           </div>
                           
-                          {item.imageUrl && (
+                          {/* Only show image if imageUrl exists and is not empty */}
+                          {item.imageUrl && item.imageUrl.trim() !== '' && (
                             <div className="mt-3">
                               <img
                                 src={item.imageUrl}

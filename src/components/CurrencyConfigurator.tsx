@@ -17,7 +17,7 @@ const COMMON_CURRENCIES = [
 ];
 
 const CurrencyConfigurator = () => {
-  const { theme, setCurrencySymbol } = useTheme();
+  const { theme, updateTheme } = useTheme();
   const [customSymbol, setCustomSymbol] = useState('');
   const [selectedSymbol, setSelectedSymbol] = useState(theme.currencySymbol || '₹');
   const [isSaving, setIsSaving] = useState(false);
@@ -46,9 +46,20 @@ const CurrencyConfigurator = () => {
     if (!hasChanges) return;
     
     setIsSaving(true);
-    await setCurrencySymbol(selectedSymbol);
-    setHasChanges(false);
-    setIsSaving(false);
+    try {
+      // Create a new theme object with the updated currency symbol
+      const updatedTheme = {
+        ...theme,
+        currencySymbol: selectedSymbol
+      };
+      
+      await updateTheme(updatedTheme);
+      setHasChanges(false);
+    } catch (error) {
+      console.error("Error saving currency:", error);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
