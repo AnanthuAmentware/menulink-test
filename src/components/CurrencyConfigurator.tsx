@@ -17,7 +17,7 @@ const COMMON_CURRENCIES = [
 ];
 
 const CurrencyConfigurator = () => {
-  const { theme, updateTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
   const [customSymbol, setCustomSymbol] = useState('');
   const [selectedSymbol, setSelectedSymbol] = useState(theme.currencySymbol || '₹');
   const [isSaving, setIsSaving] = useState(false);
@@ -53,7 +53,7 @@ const CurrencyConfigurator = () => {
         currencySymbol: selectedSymbol
       };
       
-      await updateTheme(updatedTheme);
+      await setTheme(updatedTheme);
       setHasChanges(false);
     } catch (error) {
       console.error("Error saving currency:", error);
