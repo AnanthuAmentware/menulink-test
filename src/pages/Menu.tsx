@@ -112,8 +112,9 @@ const Menu = () => {
     );
   }
 
-  // Handle undefined menuSections
-  const menuSections = restaurant?.menuSections || [];
+  // Filter out disabled sections
+  const visibleSections = restaurant?.menuSections?.filter(section => !section.isDisabled) || [];
+  
   // Get currency symbol from theme or use default
   const currencySymbol = restaurant?.theme?.currencySymbol || '₹';
 
@@ -149,8 +150,8 @@ const Menu = () => {
         </div>
 
         {/* Menu Sections */}
-        {menuSections.length > 0 ? (
-          menuSections.map((section) => (
+        {visibleSections.length > 0 ? (
+          visibleSections.map((section) => (
             <div key={section.id} className="menu-section mb-8">
               <h2 className="text-2xl font-bold section-header mb-4 text-restaurant-burgundy">
                 {section.name}
@@ -158,26 +159,52 @@ const Menu = () => {
               
               <div className="grid gap-4 sm:grid-cols-1 lg:grid-cols-2">
                 {section.items && section.items.length > 0 ? (
-                  section.items.map((item) => (
+                  // Filter out disabled items
+                  section.items
+                    .filter(item => !item.isDisabled)
+                    .map((item) => (
                     <Card 
                       key={item.id} 
                       className="menu-item-card overflow-hidden glass-card"
                     >
-                      <CardContent className="p-0">
-                        <div className="p-4">
+                      <CardContent className="p-3">
+                        <div>
                           <div className="flex justify-between items-start">
                             <div>
                               <h3 className="font-bold text-lg text-restaurant-dark">
                                 {item.name}
+                                {item.outOfStock && (
+                                  <span className="ml-2 text-xs px-2 py-1 bg-red-100 text-red-800 rounded-full">
+                                    Out of Stock
+                                  </span>
+                                )}
                               </h3>
                               <p className="text-sm mt-1 text-restaurant-dark">
                                 {item.description}
                               </p>
                             </div>
                             <div className="font-bold text-restaurant-burgundy">
-                              {currencySymbol}{item.price.toFixed(2)}
+                              {item.priceVariations && item.priceVariations.length > 0 ? (
+                                <span>{currencySymbol}{item.priceVariations[0].price.toFixed(2)}</span>
+                              ) : (
+                                <span>{currencySymbol}{item.price.toFixed(2)}</span>
+                              )}
                             </div>
                           </div>
+                          
+                          {/* Display price variations if available */}
+                          {item.priceVariations && item.priceVariations.length > 0 && (
+                            <div className="mt-2 space-y-1">
+                              {item.priceVariations.map((variation, index) => (
+                                <div key={index} className="flex justify-between text-sm">
+                                  <span className="text-restaurant-dark">{variation.name}</span>
+                                  <span className="font-medium text-restaurant-burgundy">
+                                    {currencySymbol}{variation.price.toFixed(2)}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
                           
                           {/* Only show image if imageUrl exists and is not empty */}
                           {item.imageUrl && item.imageUrl.trim() !== '' && (

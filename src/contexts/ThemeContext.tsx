@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { db, doc, getDoc, updateDoc } from '@/lib/firebase';
 import { useAuth } from './AuthContext';
@@ -24,7 +23,7 @@ export type RestaurantTheme = {
   fonts: FontSettings;
   borderRadius: string;
   isDark: boolean;
-  currencySymbol?: string;
+  currencySymbol: string;
 };
 
 // Default theme presets with currency symbol
@@ -237,7 +236,7 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
 
     // Other theme properties
     setThemeVariable('border-radius', theme.borderRadius);
-    setThemeVariable('currency-symbol', theme.currencySymbol || '₹');
+    setThemeVariable('currency-symbol', theme.currencySymbol);
 
     // Set restaurant-specific colors
     setThemeVariable('restaurant-burgundy', theme.colors.primary);

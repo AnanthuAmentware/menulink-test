@@ -1,16 +1,25 @@
 
+export type PriceVariation = {
+  name: string;  // e.g., "Quarter", "Half", "Full"
+  price: number;
+};
+
 export type MenuItem = {
   id: string;
   name: string;
   description: string;
   price: number;
   imageUrl?: string;
+  isDisabled?: boolean;
+  outOfStock?: boolean;
+  priceVariations?: PriceVariation[];
 };
 
 export type MenuSection = {
   id: string;
   name: string;
   items: MenuItem[];
+  isDisabled?: boolean;
 };
 
 export type Restaurant = {

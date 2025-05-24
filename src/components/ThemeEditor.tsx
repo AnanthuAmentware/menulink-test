@@ -26,7 +26,21 @@ const ThemeEditor = () => {
   useEffect(() => {
     setWorkingTheme({ ...theme });
     setHasChanges(false);
-  }, [theme]);
+    
+    // Check if the current theme matches any preset
+    const presetMatch = Object.entries(availablePresets).find(([_, preset]) => {
+      return JSON.stringify(preset.colors) === JSON.stringify(theme.colors) && 
+             JSON.stringify(preset.fonts) === JSON.stringify(theme.fonts) &&
+             preset.borderRadius === theme.borderRadius &&
+             preset.isDark === theme.isDark;
+    });
+    
+    if (presetMatch) {
+      setSelectedPreset(presetMatch[0]);
+    } else {
+      setSelectedPreset("custom");
+    }
+  }, [theme, availablePresets]);
 
   const handleColorChange = (colorKey: keyof typeof workingTheme.colors, value: string) => {
     setWorkingTheme(prev => ({
@@ -238,39 +252,6 @@ const ThemeEditor = () => {
                       </div>
                     </div>
                   </div>
-                  
-                  <div className="flex space-x-2">
-                    <button 
-                      style={{ 
-                        backgroundColor: workingTheme.colors.primary,
-                        color: getContrastColor(workingTheme.colors.primary),
-                        borderRadius: workingTheme.borderRadius,
-                      }}
-                      className="px-3 py-1 text-sm"
-                    >
-                      Primary Button
-                    </button>
-                    <button 
-                      style={{ 
-                        backgroundColor: workingTheme.colors.secondary,
-                        color: getContrastColor(workingTheme.colors.secondary),
-                        borderRadius: workingTheme.borderRadius,
-                      }}
-                      className="px-3 py-1 text-sm"
-                    >
-                      Secondary Button
-                    </button>
-                    <button 
-                      style={{ 
-                        backgroundColor: workingTheme.colors.accent,
-                        color: getContrastColor(workingTheme.colors.accent),
-                        borderRadius: workingTheme.borderRadius,
-                      }}
-                      className="px-3 py-1 text-sm"
-                    >
-                      Accent Button
-                    </button>
-                  </div>
                 </div>
               </div>
             </div>
@@ -318,15 +299,17 @@ const ThemeEditor = () => {
               
               <div className="mt-4 space-y-2">
                 <Label htmlFor="borderRadius">Border Radius</Label>
-                <div className="grid grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
                   {['0', '0.25rem', '0.5rem', '0.75rem', '1rem'].map(radius => (
                     <div
                       key={radius}
-                      className={`border p-3 text-center cursor-pointer rounded transition-all hover:border-primary ${workingTheme.borderRadius === radius ? 'ring-2 ring-primary' : ''}`}
+                      className={`border p-3 text-center cursor-pointer rounded transition-all hover:border-primary flex items-center justify-center ${workingTheme.borderRadius === radius ? 'ring-2 ring-primary' : ''}`}
                       style={{ borderRadius: radius }}
                       onClick={() => handleBorderRadiusChange(radius)}
                     >
-                      {radius === '0' ? 'None' : radius}
+                      <span className="truncate text-sm">
+                        {radius === '0' ? 'None' : radius}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -368,7 +351,7 @@ const ThemeEditor = () => {
 
       {/* Color Picker Dialog */}
       <Dialog open={openColorPicker} onOpenChange={setOpenColorPicker}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md bg-white">
           <DialogHeader>
             <DialogTitle>Select Color</DialogTitle>
           </DialogHeader>
@@ -394,7 +377,7 @@ const ThemeEditor = () => {
             </div>
             <div>
               <Button 
-                className="w-full" 
+                className="w-full bg-black text-white" 
                 onClick={() => setOpenColorPicker(false)}
               >
                 <Check className="mr-2 h-4 w-4" />

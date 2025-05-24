@@ -1,4 +1,3 @@
-
 import { ColorScheme, RestaurantTheme } from "@/contexts/ThemeContext";
 
 /**
@@ -133,5 +132,6 @@ export const blendThemes = (
     },
     borderRadius: baseTheme.borderRadius,
     isDark: baseTheme.isDark,
+    currencySymbol: baseTheme.currencySymbol || accentTheme.currencySymbol || "₹", // Add the missing currencySymbol property
   };
 };

@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { db, doc, getDoc, updateDoc } from "../lib/firebase";
@@ -5,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
 import { 
   Dialog, 
   DialogContent, 
@@ -13,8 +15,22 @@ import {
   DialogHeader,
   DialogTitle
 } from "@/components/ui/dialog";
-import { MenuSection, MenuItem } from "@/types";
-import { Plus, Trash2, MoveVertical, Save, Edit, RefreshCcw } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { MenuSection, MenuItem, PriceVariation } from "@/types";
+import { Plus, Trash2, MoveVertical, Save, Edit, RefreshCcw, AlertCircle, XCircle, MoreVertical } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { v4 as uuidv4 } from "uuid";
 import { 
@@ -34,16 +50,21 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { useIsMobile } from "@/hooks/use-mobile";
 
 // Component for a draggable menu item
 const SortableMenuItem = ({ 
   item, 
   onEdit, 
-  onDelete 
+  onDelete,
+  onStatusChange,
+  currencySymbol
 }: { 
   item: MenuItem; 
   onEdit: (item: MenuItem) => void; 
   onDelete: (id: string) => void;
+  onStatusChange: (id: string, status: 'active' | 'disabled' | 'outOfStock') => void;
+  currencySymbol: string;
 }) => {
   const {
     attributes,
@@ -52,6 +73,14 @@ const SortableMenuItem = ({
     transform,
     transition
   } = useSortable({ id: item.id });
+
+  const isMobile = useIsMobile();
+  
+  const getItemStatus = (): 'active' | 'disabled' | 'outOfStock' => {
+    if (item.isDisabled) return 'disabled';
+    if (item.outOfStock) return 'outOfStock';
+    return 'active';
+  };
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -63,17 +92,63 @@ const SortableMenuItem = ({
       ref={setNodeRef}
       style={style}
       {...attributes}
-      className="glass-card mb-2 p-3 flex items-center justify-between"
+      className={`glass-card mb-2 p-3 flex items-center justify-between ${item.isDisabled ? 'opacity-50' : ''}`}
     >
       <div className="flex-1 min-w-0">
         <div className="flex justify-between">
-          <div className="font-medium truncate">{item.name}</div>
-          <div className="text-primary font-bold">${item.price.toFixed(2)}</div>
+          <div className="font-medium truncate flex items-center gap-2">
+            {item.name}
+            {item.outOfStock && (
+              <span className="text-xs px-2 py-0.5 bg-red-100 text-red-800 rounded-full">Out of Stock</span>
+            )}
+            {item.isDisabled && (
+              <span className="text-xs px-2 py-0.5 bg-gray-100 text-gray-800 rounded-full">Disabled</span>
+            )}
+          </div>
+          <div className="text-primary font-bold">
+            {item.priceVariations && item.priceVariations.length > 0 ? (
+              <span>{`${currencySymbol}${item.priceVariations[0].price.toFixed(2)}+`}</span>
+            ) : (
+              item.price ? <span>{currencySymbol}{item.price.toFixed(2)}</span> : <span>-</span>
+            )}
+          </div>
         </div>
         <div className="text-sm text-gray-400 truncate">{item.description}</div>
       </div>
       
-      <div className="flex items-center ml-4 space-x-2">
+      <div className={`flex items-center ml-4 ${isMobile ? 'flex-col gap-1' : 'space-x-2'}`}>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button 
+              size="icon" 
+              variant="ghost"
+              className="hover:bg-white/10"
+            >
+              <MoreVertical className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem 
+              onClick={() => onStatusChange(item.id, 'active')}
+              className={getItemStatus() === 'active' ? 'bg-primary/10 font-medium' : ''}
+            >
+              Active
+            </DropdownMenuItem>
+            <DropdownMenuItem 
+              onClick={() => onStatusChange(item.id, 'outOfStock')}
+              className={getItemStatus() === 'outOfStock' ? 'bg-primary/10 font-medium' : ''}
+            >
+              Out of Stock
+            </DropdownMenuItem>
+            <DropdownMenuItem 
+              onClick={() => onStatusChange(item.id, 'disabled')}
+              className={getItemStatus() === 'disabled' ? 'bg-primary/10 font-medium' : ''}
+            >
+              Disabled
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+        
         <Button size="icon" variant="ghost" onClick={() => onEdit(item)} className="hover:bg-white/10">
           <Edit className="h-4 w-4" />
         </Button>
@@ -96,7 +171,10 @@ const SortableMenuSection = ({
   onAddItem,
   onEditItem,
   onDeleteItem,
-  onItemsReorder
+  onStatusChange,
+  onToggleSectionDisabled,
+  onItemsReorder,
+  currencySymbol
 }: { 
   section: MenuSection;
   onEdit: (section: MenuSection) => void;
@@ -104,7 +182,10 @@ const SortableMenuSection = ({
   onAddItem: (sectionId: string) => void;
   onEditItem: (sectionId: string, item: MenuItem) => void;
   onDeleteItem: (sectionId: string, itemId: string) => void;
+  onStatusChange: (sectionId: string, itemId: string, status: 'active' | 'disabled' | 'outOfStock') => void;
+  onToggleSectionDisabled: (sectionId: string, disabled: boolean) => void;
   onItemsReorder: (sectionId: string, items: MenuItem[]) => void;
+  currencySymbol: string;
 }) => {
   const {
     attributes,
@@ -118,6 +199,8 @@ const SortableMenuSection = ({
     transform: CSS.Transform.toString(transform),
     transition,
   };
+
+  const isMobile = useIsMobile();
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -142,17 +225,29 @@ const SortableMenuSection = ({
     <div
       ref={setNodeRef}
       style={style}
-      className="menu-section glass-card mb-6 last:mb-0 border-l-4 border-primary/50"
+      className={`menu-section glass-card mb-6 last:mb-0 border-l-4 ${section.isDisabled ? 'border-gray-400 opacity-75' : 'border-primary/50'}`}
     >
-      <div className="flex justify-between items-center mb-4">
-        <div className="flex items-center">
+      <div className={`flex ${isMobile ? 'flex-col' : 'justify-between'} items-start md:items-center mb-4`}>
+        <div className="flex items-center mb-2 md:mb-0">
           <h3 className="text-xl font-bold">{section.name}</h3>
+          {section.isDisabled && (
+            <span className="ml-2 text-xs px-2 py-0.5 bg-gray-100 text-gray-800 rounded-full">Disabled</span>
+          )}
           <div {...listeners} className="cursor-move p-1 ml-2">
             <MoveVertical className="h-4 w-4 text-gray-400" />
           </div>
         </div>
         
         <div className="flex flex-wrap gap-2">
+          <div className="flex items-center">
+            <Label htmlFor={`section-disabled-${section.id}`} className="mr-2">Disabled</Label>
+            <Switch 
+              id={`section-disabled-${section.id}`} 
+              checked={section.isDisabled || false}
+              onCheckedChange={(checked) => onToggleSectionDisabled(section.id, checked)}
+            />
+          </div>
+          
           <Button 
             variant="outline" 
             size="sm"
@@ -200,6 +295,8 @@ const SortableMenuSection = ({
                   item={item}
                   onEdit={(item) => onEditItem(section.id, item)}
                   onDelete={(itemId) => onDeleteItem(section.id, itemId)}
+                  onStatusChange={(itemId, status) => onStatusChange(section.id, itemId, status)}
+                  currencySymbol={currencySymbol}
                 />
               ))
             ) : (
@@ -228,6 +325,7 @@ const MenuBuilder = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [menuChanged, setMenuChanged] = useState(false);
+  const [currencySymbol, setCurrencySymbol] = useState("₹");
   
   // Dialog states
   const [sectionDialogOpen, setSectionDialogOpen] = useState(false);
@@ -242,9 +340,13 @@ const MenuBuilder = () => {
   const [itemDescription, setItemDescription] = useState("");
   const [itemPrice, setItemPrice] = useState("");
   const [itemImageUrl, setItemImageUrl] = useState("");
+  const [itemIsDisabled, setItemIsDisabled] = useState(false);
+  const [itemOutOfStock, setItemOutOfStock] = useState(false);
+  const [priceVariations, setPriceVariations] = useState<PriceVariation[]>([]);
   
   const { currentUser } = useAuth();
   const { toast } = useToast();
+  const isMobile = useIsMobile();
   
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -271,6 +373,11 @@ const MenuBuilder = () => {
         const data = restaurantDoc.data();
         setRestaurant({ id: restaurantDoc.id, ...data });
         setMenuSections(data.menuSections || []);
+        
+        // Set currency symbol from restaurant data
+        if (data.theme && data.theme.currencySymbol) {
+          setCurrencySymbol(data.theme.currencySymbol);
+        }
       } else {
         toast({
           title: "Restaurant not found",
@@ -359,7 +466,8 @@ const MenuBuilder = () => {
       const newSection: MenuSection = {
         id: uuidv4(),
         name: sectionName,
-        items: []
+        items: [],
+        isDisabled: false
       };
       
       setMenuSections([...menuSections, newSection]);
@@ -394,6 +502,9 @@ const MenuBuilder = () => {
     setItemDescription("");
     setItemPrice("");
     setItemImageUrl("");
+    setItemIsDisabled(false);
+    setItemOutOfStock(false);
+    setPriceVariations([]);
     setItemDialogOpen(true);
   };
 
@@ -402,8 +513,11 @@ const MenuBuilder = () => {
     setCurrentItem(item);
     setItemName(item.name);
     setItemDescription(item.description);
-    setItemPrice(item.price.toString());
+    setItemPrice(item.price ? item.price.toString() : "");
     setItemImageUrl(item.imageUrl || "");
+    setItemIsDisabled(item.isDisabled || false);
+    setItemOutOfStock(item.outOfStock || false);
+    setPriceVariations(item.priceVariations || []);
     setItemDialogOpen(true);
   };
 
@@ -417,14 +531,20 @@ const MenuBuilder = () => {
       return;
     }
 
-    const price = parseFloat(itemPrice);
-    if (isNaN(price) || price < 0) {
+    // Price is only required if no variations exist
+    let price = parseFloat(itemPrice);
+    if (!priceVariations.length && (isNaN(price) || price < 0)) {
       toast({
-        title: "Invalid price",
-        description: "Please enter a valid price.",
+        title: "Valid price required",
+        description: "Please enter a valid price or add price variations.",
         variant: "destructive",
       });
       return;
+    }
+
+    // If price variations exist, price is optional
+    if (priceVariations.length > 0) {
+      price = 0; // Set to 0 or undefined when variations exist
     }
 
     const sectionIndex = menuSections.findIndex(section => section.id === currentSectionId);
@@ -444,8 +564,11 @@ const MenuBuilder = () => {
               ...item,
               name: itemName,
               description: itemDescription,
-              price,
-              imageUrl
+              price: priceVariations.length > 0 ? 0 : price,
+              imageUrl,
+              isDisabled: itemIsDisabled,
+              outOfStock: itemOutOfStock,
+              priceVariations: priceVariations.length > 0 ? [...priceVariations] : undefined
             }
           : item
       );
@@ -463,8 +586,11 @@ const MenuBuilder = () => {
         id: uuidv4(),
         name: itemName,
         description: itemDescription,
-        price,
-        imageUrl
+        price: priceVariations.length > 0 ? 0 : price,
+        imageUrl,
+        isDisabled: itemIsDisabled,
+        outOfStock: itemOutOfStock,
+        priceVariations: priceVariations.length > 0 ? [...priceVariations] : undefined
       };
       
       section.items = [...section.items, newItem];
@@ -498,6 +624,85 @@ const MenuBuilder = () => {
       title: "Item deleted",
       description: "The item has been removed from the menu.",
     });
+  };
+
+  const handleStatusChange = (sectionId: string, itemId: string, status: 'active' | 'disabled' | 'outOfStock') => {
+    const sectionIndex = menuSections.findIndex(section => section.id === sectionId);
+    if (sectionIndex === -1) return;
+
+    const updatedSections = [...menuSections];
+    const section = { ...updatedSections[sectionIndex] };
+    
+    section.items = section.items.map(item => {
+      if (item.id === itemId) {
+        switch(status) {
+          case 'active':
+            return { ...item, isDisabled: false, outOfStock: false };
+          case 'disabled':
+            return { ...item, isDisabled: true, outOfStock: false };
+          case 'outOfStock':
+            return { ...item, isDisabled: false, outOfStock: true };
+          default:
+            return item;
+        }
+      }
+      return item;
+    });
+    
+    updatedSections[sectionIndex] = section;
+    setMenuSections(updatedSections);
+    setMenuChanged(true);
+    
+    toast({
+      title: `Item ${status === 'active' ? 'activated' : status === 'disabled' ? 'disabled' : 'marked out of stock'}`,
+      description: `The item status has been updated.`,
+    });
+  };
+
+  const handleToggleSectionDisabled = (sectionId: string, isDisabled: boolean) => {
+    const updatedSections = menuSections.map(section =>
+      section.id === sectionId ? { ...section, isDisabled } : section
+    );
+    
+    setMenuSections(updatedSections);
+    setMenuChanged(true);
+    
+    toast({
+      title: isDisabled ? "Section disabled" : "Section enabled",
+      description: `The section has been ${isDisabled ? 'hidden from' : 'shown on'} the menu.`,
+    });
+  };
+
+  const handleAddVariation = () => {
+    setPriceVariations([
+      ...priceVariations, 
+      { name: "", price: 0 }
+    ]);
+  };
+
+  const handleUpdateVariation = (index: number, field: keyof PriceVariation, value: string) => {
+    const updated = [...priceVariations];
+    if (field === 'name') {
+      updated[index].name = value;
+    } else if (field === 'price') {
+      updated[index].price = parseFloat(value) || 0;
+    }
+    setPriceVariations(updated);
+  };
+
+  const handleRemoveVariation = (index: number) => {
+    // Don't allow removing the last variation if we're using variations (and no base price)
+    const shouldPreventRemoval = priceVariations.length === 1 && !itemPrice;
+    
+    if (!shouldPreventRemoval) {
+      setPriceVariations(priceVariations.filter((_, i) => i !== index));
+    } else {
+      toast({
+        title: "Cannot remove all variations",
+        description: "You must have at least one price option. Add a base price or keep at least one variation.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleItemsReorder = (sectionId: string, items: MenuItem[]) => {
@@ -608,7 +813,10 @@ const MenuBuilder = () => {
                   onAddItem={openAddItemDialog}
                   onEditItem={openEditItemDialog}
                   onDeleteItem={handleDeleteItem}
+                  onStatusChange={handleStatusChange}
+                  onToggleSectionDisabled={handleToggleSectionDisabled}
                   onItemsReorder={handleItemsReorder}
+                  currencySymbol={currencySymbol}
                 />
               ))}
             </div>
@@ -618,7 +826,7 @@ const MenuBuilder = () => {
 
       {/* Section Dialog */}
       <Dialog open={sectionDialogOpen} onOpenChange={setSectionDialogOpen}>
-        <DialogContent className="glass-dialog">
+        <DialogContent className={`glass-dialog ${isMobile ? 'w-[90vw] max-w-none mx-auto' : ''}`}>
           <DialogHeader>
             <DialogTitle>
               {currentSection ? "Edit Section" : "Add Section"}
@@ -650,7 +858,7 @@ const MenuBuilder = () => {
             </Button>
             <Button 
               onClick={handleSaveSection}
-              className="bg-primary text-white hover:bg-primary/90"
+              className="bg-black text-white hover:bg-black/90"
             >
               {currentSection ? "Update Section" : "Add Section"}
             </Button>
@@ -660,7 +868,7 @@ const MenuBuilder = () => {
 
       {/* Item Dialog */}
       <Dialog open={itemDialogOpen} onOpenChange={setItemDialogOpen}>
-        <DialogContent className="glass-dialog sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
+        <DialogContent className={`glass-dialog ${isMobile ? 'w-[90vw] max-w-none mx-auto' : 'sm:max-w-[500px]'} max-h-[90vh] overflow-y-auto bg-white text-black`}>
           <DialogHeader>
             <DialogTitle>
               {currentItem ? "Edit Menu Item" : "Add Menu Item"}
@@ -685,19 +893,78 @@ const MenuBuilder = () => {
               />
             </div>
             
-            <div className="space-y-2">
-              <label htmlFor="item-price" className="text-sm font-medium">
-                Price
+            <div className={`space-y-2 ${priceVariations.length > 0 ? 'opacity-50' : ''}`}>
+              <label htmlFor="item-price" className="text-sm font-medium flex justify-between">
+                <span>Base Price {priceVariations.length > 0 && "(Not used with variations)"}</span>
+                {priceVariations.length > 0 && 
+                  <span className="text-xs text-gray-500">(Optional with variations)</span>
+                }
               </label>
-              <Input
-                id="item-price"
-                value={itemPrice}
-                onChange={(e) => setItemPrice(e.target.value)}
-                placeholder="0.00"
-                type="number"
-                step="0.01"
-                min="0"
-              />
+              <div className="flex items-center">
+                <span className="mr-1">{currencySymbol}</span>
+                <Input
+                  id="item-price"
+                  value={itemPrice}
+                  onChange={(e) => setItemPrice(e.target.value)}
+                  placeholder="0.00"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  disabled={priceVariations.length > 0}
+                />
+              </div>
+            </div>
+            
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <label className="text-sm font-medium">Price Variations</label>
+                <Button 
+                  type="button" 
+                  size="sm" 
+                  onClick={handleAddVariation}
+                  className="bg-black text-white hover:bg-black/90"
+                >
+                  <Plus className="h-4 w-4 mr-1" /> Add Variation
+                </Button>
+              </div>
+              
+              {priceVariations.map((variation, index) => (
+                <div key={index} className={`${isMobile ? 'flex flex-col gap-2' : 'flex items-center space-x-2'}`}>
+                  <Input
+                    placeholder="Name (e.g., Quarter, Half)"
+                    value={variation.name}
+                    onChange={(e) => handleUpdateVariation(index, 'name', e.target.value)}
+                    className="flex-1"
+                  />
+                  <div className="flex items-center">
+                    <span className="mr-1">{currencySymbol}</span>
+                    <Input
+                      placeholder="Price"
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={variation.price}
+                      onChange={(e) => handleUpdateVariation(index, 'price', e.target.value)}
+                      className={isMobile ? "flex-1" : "w-24"}
+                    />
+                  </div>
+                  <Button 
+                    type="button" 
+                    size="icon" 
+                    variant="ghost" 
+                    onClick={() => handleRemoveVariation(index)}
+                    className="text-red-500"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))}
+              
+              {priceVariations.length > 0 && 
+                <p className="text-xs text-gray-500">
+                  When using variations, the base price is optional and won't be displayed.
+                </p>
+              }
             </div>
             
             <div className="space-y-2">
@@ -710,7 +977,7 @@ const MenuBuilder = () => {
                 onChange={(e) => setItemDescription(e.target.value)}
                 placeholder="Describe this item..."
                 rows={3}
-                className="border border-white/30 bg-white/10 backdrop-blur-sm resize-none focus:border-white/50 focus:bg-white/20"
+                className="border border-gray-300 bg-white/90 backdrop-blur-sm resize-none focus:border-black focus:bg-white"
               />
             </div>
             
@@ -724,7 +991,7 @@ const MenuBuilder = () => {
                 onChange={(e) => setItemImageUrl(e.target.value)}
                 placeholder="https://example.com/image.jpg"
               />
-              <p className="text-xs text-gray-400">
+              <p className="text-xs text-gray-500">
                 Images are optional. For best results, use square images (1:1 aspect ratio)
               </p>
               
@@ -746,13 +1013,13 @@ const MenuBuilder = () => {
             </div>
           </div>
           
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setItemDialogOpen(false)} className="border-white/30 bg-white/10">
+          <DialogFooter className={isMobile ? "flex-col space-y-2" : ""}>
+            <Button variant="outline" onClick={() => setItemDialogOpen(false)} className="border-gray-300 bg-white/90">
               Cancel
             </Button>
             <Button 
               onClick={handleSaveItem}
-              className="bg-primary text-white hover:bg-primary/90"
+              className="bg-black text-white hover:bg-black/90"
             >
               {currentItem ? "Update Item" : "Add Item"}
             </Button>
