@@ -6,8 +6,10 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Restaurant } from '@/types';
-import { Edit, Eye, QrCode, RefreshCcw } from 'lucide-react';
+import { Edit, Eye, QrCode, RefreshCcw, Menu as MenuIcon, Users, BarChart3, Star } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import StatsCard from '@/components/StatsCard';
+import MenuItemsChart from '@/components/MenuItemsChart';
 
 const Dashboard = () => {
   const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
@@ -52,6 +54,14 @@ const Dashboard = () => {
     0
   ) || 0;
 
+  const sectionsCount = restaurant?.menuSections?.length || 0;
+
+  // Create chart data for menu sections
+  const chartData = restaurant?.menuSections?.map(section => ({
+    name: section.name.length > 10 ? section.name.substring(0, 10) + '...' : section.name,
+    items: section.items?.length || 0
+  })) || [];
+
   if (loading) {
     return (
       <div className="page-container flex items-center justify-center min-h-[60vh]">
@@ -65,122 +75,189 @@ const Dashboard = () => {
 
   return (
     <div className="page-container">
-      <h1 className="text-4xl font-bold font-display mb-8 text-primary">Restaurant Dashboard</h1>
+      <div className="flex items-center justify-between mb-8">
+        <h1 className="text-4xl font-bold font-display text-primary">Restaurant Dashboard</h1>
+        <Button 
+          className="bg-primary/80 hover:bg-primary backdrop-blur-sm flex items-center gap-2"
+          onClick={() => navigate('/menu-builder')}
+        >
+          <MenuIcon className="h-4 w-4" />
+          Edit Menu
+        </Button>
+      </div>
       
       {restaurant ? (
-        <div className="dashboard-container">
-          <div className="col-span-1 md:col-span-2 space-y-6">
-            <Card className="glass-card">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-2xl">{restaurant.name}</CardTitle>
-                <CardDescription>
-                  {restaurant.location || "No location set"}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="font-medium">Status:</span>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      restaurant.isPublic 
-                        ? "bg-green-500/30 backdrop-blur-sm text-green-800" 
-                        : "bg-amber-500/30 backdrop-blur-sm text-amber-800"
-                    }`}>
-                      {restaurant.isPublic ? "Public" : "Private"}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="font-medium">Menu Sections:</span>
-                    <span>{restaurant.menuSections?.length || 0}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="font-medium">Menu Items:</span>
-                    <span>{menuItemsCount}</span>
-                  </div>
-                  <div>
-                    <p className="font-medium mb-1">Description:</p>
-                    <p className="text-sm">
-                      {restaurant.description || "No description available."}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="font-medium mb-1">Contact:</p>
-                    <p className="text-sm">
-                      {restaurant.contact || "No contact information provided."}
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-              <CardFooter className="flex flex-col sm:flex-row justify-between gap-2 pt-4">
-                <Button 
-                  variant="outline"
-                  className="flex items-center w-full sm:w-auto border-white/30 bg-white/10 backdrop-blur-sm"
-                  onClick={() => navigate('/edit-profile')}
-                >
-                  <Edit className="h-4 w-4 mr-2" />
-                  Edit Profile
-                </Button>
-                <Button
-                  variant="outline"
-                  className="flex items-center w-full sm:w-auto border-white/30 bg-white/10 backdrop-blur-sm"
-                  onClick={() => navigate(`/menu/${restaurant.id}`)}
-                >
-                  <Eye className="h-4 w-4 mr-2" />
-                  Preview Menu
-                </Button>
-              </CardFooter>
-            </Card>
+        <div className="space-y-8">
+          {/* Stats Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <StatsCard
+              title="Menu Sections"
+              value={sectionsCount}
+              description="Active menu categories"
+              icon={BarChart3}
+              trend={{ value: 12, isPositive: true }}
+            />
+            <StatsCard
+              title="Menu Items"
+              value={menuItemsCount}
+              description="Total items in menu"
+              icon={MenuIcon}
+              trend={{ value: 8, isPositive: true }}
+            />
+            <StatsCard
+              title="Status"
+              value={restaurant.isPublic ? "Public" : "Private"}
+              description="Menu visibility"
+              icon={Eye}
+            />
+            <StatsCard
+              title="QR Scans"
+              value="247"
+              description="This month"
+              icon={QrCode}
+              trend={{ value: 23, isPositive: true }}
+            />
           </div>
-          
-          <div className="col-span-1 space-y-6">
-            <Card className="glass-card">
-              <CardHeader>
-                <CardTitle>Quick Actions</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <Button 
-                  className="w-full bg-primary/80 hover:bg-primary backdrop-blur-sm"
-                  onClick={() => navigate('/menu-builder')}
-                >
-                  Edit Menu
-                </Button>
-                <Button 
-                  className="w-full border-white/30 bg-white/10 backdrop-blur-sm hover:bg-white/20" 
-                  variant="outline"
-                  onClick={() => navigate('/qr-code')}
-                >
-                  <QrCode className="h-4 w-4 mr-2" />
-                  QR Code
-                </Button>
-              </CardContent>
-            </Card>
-            
-            <Card className="glass-card">
-              <CardHeader>
-                <CardTitle>Getting Started</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ol className="list-decimal list-inside space-y-2 text-sm">
-                  <li>Complete your restaurant profile</li>
-                  <li>Create menu sections for different categories</li>
-                  <li>Add menu items with descriptions and prices</li>
-                  <li>Generate a QR code for your customers</li>
-                  <li>Set your menu as public when ready</li>
-                </ol>
-              </CardContent>
-            </Card>
+
+          {/* Main Content Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Restaurant Info Card */}
+            <div className="lg:col-span-2">
+              <Card className="glass-card h-full">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-2xl flex items-center gap-2">
+                    <Users className="h-6 w-6" />
+                    {restaurant.name}
+                  </CardTitle>
+                  <CardDescription>
+                    {restaurant.location || "No location set"}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <p className="font-medium text-sm text-gray-600">Description</p>
+                      <p className="text-sm">
+                        {restaurant.description || "No description available."}
+                      </p>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="font-medium text-sm text-gray-600">Contact</p>
+                      <p className="text-sm">
+                        {restaurant.contact || "No contact information provided."}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="pt-4 border-t border-white/10">
+                    <div className="flex flex-wrap gap-2">
+                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                        restaurant.isPublic 
+                          ? "bg-green-500/30 backdrop-blur-sm text-green-800" 
+                          : "bg-amber-500/30 backdrop-blur-sm text-amber-800"
+                      }`}>
+                        {restaurant.isPublic ? "✓ Public Menu" : "⏸ Private Menu"}
+                      </span>
+                      <span className="px-3 py-1 rounded-full text-xs font-medium bg-blue-500/30 backdrop-blur-sm text-blue-800">
+                        {menuItemsCount} Items
+                      </span>
+                      <span className="px-3 py-1 rounded-full text-xs font-medium bg-purple-500/30 backdrop-blur-sm text-purple-800">
+                        {sectionsCount} Sections
+                      </span>
+                    </div>
+                  </div>
+                </CardContent>
+                <CardFooter className="flex flex-col sm:flex-row justify-between gap-2 pt-4">
+                  <Button 
+                    variant="outline"
+                    className="flex items-center w-full sm:w-auto border-white/30 bg-white/10 backdrop-blur-sm gap-2"
+                    onClick={() => navigate('/edit-profile')}
+                  >
+                    <Edit className="h-4 w-4" />
+                    Edit Profile
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="flex items-center w-full sm:w-auto border-white/30 bg-white/10 backdrop-blur-sm gap-2"
+                    onClick={() => navigate(`/menu/${restaurant.id}`)}
+                  >
+                    <Eye className="h-4 w-4" />
+                    Preview Menu
+                  </Button>
+                </CardFooter>
+              </Card>
+            </div>
+
+            {/* Quick Actions */}
+            <div className="space-y-6">
+              <Card className="glass-card">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Star className="h-5 w-5" />
+                    Quick Actions
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <Button 
+                    className="w-full bg-primary/80 hover:bg-primary backdrop-blur-sm flex items-center gap-2"
+                    onClick={() => navigate('/menu-builder')}
+                  >
+                    <MenuIcon className="h-4 w-4" />
+                    Edit Menu
+                  </Button>
+                  <Button 
+                    className="w-full border-white/30 bg-white/10 backdrop-blur-sm hover:bg-white/20 flex items-center gap-2" 
+                    variant="outline"
+                    onClick={() => navigate('/qr-code')}
+                  >
+                    <QrCode className="h-4 w-4" />
+                    Generate QR Code
+                  </Button>
+                  <Button 
+                    className="w-full border-white/30 bg-white/10 backdrop-blur-sm hover:bg-white/20 flex items-center gap-2" 
+                    variant="outline"
+                    onClick={() => navigate('/edit-profile')}
+                  >
+                    <Edit className="h-4 w-4" />
+                    Edit Profile
+                  </Button>
+                </CardContent>
+              </Card>
+              
+              <Card className="glass-card">
+                <CardHeader>
+                  <CardTitle>Getting Started</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ol className="list-decimal list-inside space-y-2 text-sm">
+                    <li>Complete your restaurant profile</li>
+                    <li>Create menu sections for categories</li>
+                    <li>Add items with descriptions & prices</li>
+                    <li>Generate QR code for customers</li>
+                    <li>Set menu as public when ready</li>
+                  </ol>
+                </CardContent>
+              </Card>
+            </div>
           </div>
+
+          {/* Chart Section */}
+          {chartData.length > 0 && (
+            <MenuItemsChart data={chartData} />
+          )}
         </div>
       ) : (
         <div className="text-center py-12 glass-card p-10">
+          <Users className="h-16 w-16 mx-auto text-gray-400 mb-4" />
           <h2 className="text-2xl font-semibold">Restaurant Not Found</h2>
           <p className="mt-2 text-gray-600">
             We couldn't find your restaurant information. Please complete your profile.
           </p>
           <Button 
-            className="mt-4 bg-primary/80 hover:bg-primary backdrop-blur-sm"
+            className="mt-4 bg-primary/80 hover:bg-primary backdrop-blur-sm flex items-center gap-2 mx-auto"
             onClick={() => navigate('/edit-profile')}
           >
+            <Edit className="h-4 w-4" />
             Create Restaurant Profile
           </Button>
         </div>

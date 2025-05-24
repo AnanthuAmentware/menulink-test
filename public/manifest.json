@@ -1,7 +1,8 @@
 
 {
-  "short_name": "Restaurant Menu",
-  "name": "Digital Restaurant Menu",
+  "short_name": "MenuBuilder",
+  "name": "MenuBuilder - Digital Restaurant Menu",
+  "description": "Create and manage digital restaurant menus with QR codes",
   "icons": [
     {
       "src": "favicon.ico",
@@ -19,8 +20,11 @@
       "sizes": "512x512"
     }
   ],
-  "start_url": ".",
+  "start_url": "/",
   "display": "standalone",
   "theme_color": "#8B2635",
-  "background_color": "#ffffff"
+  "background_color": "#ffffff",
+  "orientation": "portrait",
+  "categories": ["business", "food", "productivity"],
+  "lang": "en"
 }
