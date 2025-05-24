@@ -35,6 +35,7 @@ export type Restaurant = {
   createdAt: any; // Timestamp
   menuSections: MenuSection[];
   currencySymbol?: string;
+  qrScans?: number;
 };
 
 export type RestaurantSummary = {
