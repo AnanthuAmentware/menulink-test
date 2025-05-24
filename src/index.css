@@ -9,32 +9,32 @@
   :root {
     /* Base shadcn/ui color scheme */
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 0 0% 0%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 0 0% 0%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 0 0% 0%;
 
-    --primary: 349 73% 35%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 0 0% 0%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 60 56% 91%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 0 0% 0%;
 
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 43 65% 53%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 0 0% 0%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --ring: 0 0% 0%;
 
     --radius: 0.5rem;
 
@@ -48,38 +48,38 @@
     --sidebar-ring: 217.2 91.2% 59.8%;
 
     /* Theme variables */
-    --primary: var(--primary, 349 73% 35%);
-    --secondary: var(--secondary, 60 56% 91%);
-    --accent: var(--accent, 43 65% 53%);
+    --primary: var(--primary, 0 0% 0%);
+    --secondary: var(--secondary, 210 40% 96.1%);
+    --accent: var(--accent, 210 40% 96.1%);
     --background-color: var(--background-color, 0 0% 100%);
-    --text-color: var(--text-color, 222.2 84% 4.9%);
-    --heading-color: var(--heading-color, 349 73% 35%);
+    --text-color: var(--text-color, 0 0% 0%);
+    --heading-color: var(--heading-color, 0 0% 0%);
     --heading-font: var(--heading-font, 'Playfair Display');
     --body-font: var(--body-font, 'Lato');
     --border-radius: var(--border-radius, 0.5rem);
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 0 0% 0%;
+    --card-foreground: 0 0% 100%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 0 0% 0%;
+    --popover-foreground: 0 0% 100%;
 
-    --primary: 349 73% 35%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 0 0% 100%;
+    --primary-foreground: 0 0% 0%;
 
-    --secondary: 60 56% 91%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 0 0% 100%;
 
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
 
-    --accent: 43 65% 53%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
@@ -106,188 +106,115 @@
 
   html, body {
     @apply min-h-screen;
-    background-image: linear-gradient(to bottom right, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.1)), url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><path d="M0 0 100 0 100 100 0 100z" fill="%23f0f4f8" fill-opacity=".1"/></svg>');
-    background-size: cover;
-    background-attachment: fixed;
+    background: white;
   }
 
   body {
     @apply text-foreground;
     font-family: var(--body-font, 'Lato'), sans-serif;
+    color: black;
   }
 
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--heading-font, 'Playfair Display'), serif;
+    color: black;
   }
 }
 
 @layer components {
-  /* Glassmorphism base styles */
-  .glass {
-    @apply bg-white/20 backdrop-blur-md border border-white/30 shadow-lg;
-  }
-
-  .glass-card {
-    @apply glass rounded-xl;
-  }
-
-  .glass-hover {
-    @apply transition duration-300 hover:bg-white/30 hover:shadow-xl;
-  }
-
-  /* Component overrides for glassmorphism */
-  .menu-item-card {
-    @apply glass-card p-6;
-  }
-
-  .restaurant-card {
-    @apply glass-card p-6 hover:shadow-xl transition-all duration-300;
-  }
-
-  .section-header {
-    @apply border-b border-white/30 pb-2 mb-4 text-primary;
-  }
-
   .page-container {
     @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8;
   }
 
-  .dashboard-container {
-    @apply grid grid-cols-1 md:grid-cols-3 gap-6;
-  }
-
-  .dashboard-panel {
-    @apply glass-card p-6;
-  }
-
-  .menu-section {
-    @apply glass-card p-6 mb-6 relative border-l-4 border-primary/50;
-  }
-
   /* Button overrides */
-  .btn-glass {
-    @apply glass px-4 py-2 rounded-lg transition-all duration-300 hover:bg-white/30 active:scale-95;
+  .btn-primary {
+    @apply bg-black text-white hover:bg-gray-800;
   }
 
-  .btn-glass-primary {
-    @apply btn-glass bg-primary/20 text-primary-foreground border-primary/30 hover:bg-primary/30;
+  .btn-secondary {
+    @apply bg-white border border-gray-300 text-black hover:bg-gray-50;
   }
 
-  /* Form input overrides */
-  .input-glass {
-    @apply glass border-white/30 focus:border-white/50 focus:bg-white/30 focus:ring-1 focus:ring-white/50;
+  /* Navigation fixes */
+  .nav-item {
+    @apply text-black hover:text-gray-600;
   }
 
-  /* Theme-based utility classes */
-  .theme-primary-bg {
-    background-color: hsl(var(--primary) / 0.2);
-    backdrop-filter: blur(8px);
+  .nav-item.active {
+    @apply text-black font-semibold;
   }
 
-  .theme-primary-text {
-    color: hsl(var(--primary));
+  /* Logout button fix */
+  .logout-button {
+    @apply text-black hover:text-gray-600 transition-colors;
   }
 
-  .theme-secondary-bg {
-    background-color: hsl(var(--secondary) / 0.2);
-    backdrop-filter: blur(8px);
+  .logout-button:hover {
+    @apply text-gray-600 !important;
   }
 
-  .theme-accent-bg {
-    background-color: hsl(var(--accent) / 0.2);
-    backdrop-filter: blur(8px);
+  .logout-button:hover svg {
+    @apply text-gray-600 !important;
   }
 
-  .theme-gradient {
-    background: linear-gradient(to right, 
-      hsla(var(--primary), 0.7), 
-      hsla(var(--accent), 0.7)
-    );
-    backdrop-filter: blur(8px);
+  /* Loading states */
+  .loading-spinner {
+    @apply text-black;
   }
 
-  /* Navigation glassmorphism */
-  .nav-glass {
-    @apply glass sticky top-0 z-50 px-4 py-2;
+  /* Cards */
+  .dashboard-card {
+    @apply bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow;
   }
 
-  /* Glass table */
-  .glass-table {
-    @apply w-full border-collapse;
+  /* Form inputs */
+  .form-input {
+    @apply bg-white border border-gray-300 text-black focus:border-black focus:ring-1 focus:ring-black;
   }
 
-  .glass-table th {
-    @apply glass text-left p-3 border-b border-white/20;
+  /* Switches and toggles */
+  .switch-checked {
+    @apply bg-black;
   }
 
-  .glass-table td {
-    @apply p-3 border-b border-white/10;
-  }
-
-  .glass-table tr {
-    @apply hover:bg-white/10 transition-colors;
-  }
-
-  /* Dialog/Modal glassmorphism */
-  .glass-dialog {
-    @apply glass-card p-0 overflow-hidden;
-  }
-
-  .glass-dialog-header {
-    @apply p-4 border-b border-white/20 bg-white/10;
-  }
-
-  .glass-dialog-content {
-    @apply p-4;
-  }
-
-  .glass-dialog-footer {
-    @apply p-4 border-t border-white/20 bg-white/10 flex justify-end gap-2;
+  .switch-unchecked {
+    @apply bg-gray-400;
   }
 }
 
-/* Further overrides for specific shadcn components */
+/* Override any remaining glassmorphism */
 .card {
-  @apply glass-card overflow-hidden;
+  @apply bg-white border border-gray-200;
 }
 
-.input, .textarea, .select {
-  @apply input-glass;
+.glass, .glass-card, .restaurant-card {
+  @apply bg-white border border-gray-200 backdrop-blur-none;
 }
 
-.button {
-  @apply btn-glass;
+/* Navigation specific fixes */
+[data-component="navigation"] button:hover {
+  color: #4b5563 !important;
 }
 
-.button-primary {
-  @apply btn-glass-primary;
+[data-component="navigation"] button:hover svg {
+  color: #4b5563 !important;
 }
 
-.dropdown-content {
-  @apply glass-card mt-1 py-1;
+/* Ensure all text remains visible on hover */
+button:hover {
+  color: inherit;
 }
 
-.modal, .dialog {
-  @apply glass-dialog;
+button:hover svg {
+  color: inherit;
 }
 
-.sidebar {
-  @apply glass border-r border-white/20;
+/* Specific logout button styling */
+.logout-btn:hover {
+  background-color: #f3f4f6 !important;
+  color: #374151 !important;
 }
 
-.popover {
-  @apply glass-card;
-}
-
-/* Make background colors more transparent */
-.bg-background {
-  @apply bg-white/20 backdrop-blur-md;
-}
-
-.bg-card {
-  @apply bg-white/20 backdrop-blur-md;
-}
-
-.bg-white {
-  @apply bg-white/80 backdrop-blur-md;
+.logout-btn:hover svg {
+  color: #374151 !important;
 }

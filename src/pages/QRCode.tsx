@@ -91,14 +91,13 @@ const QRCodePage = () => {
   const downloadQRCode = () => {
     if (!qrRef.current) return;
     
-    // Create a canvas element
     const canvas = document.createElement("canvas");
     const svg = qrRef.current.querySelector("svg");
     const svgData = new XMLSerializer().serializeToString(svg!);
     
     const img = new Image();
     img.onload = () => {
-      canvas.width = img.width * 3; // Scale up for better quality
+      canvas.width = img.width * 3;
       canvas.height = img.height * 3;
       
       const context = canvas.getContext("2d")!;
@@ -106,14 +105,12 @@ const QRCodePage = () => {
       context.fillRect(0, 0, canvas.width, canvas.height);
       context.drawImage(img, 0, 0, canvas.width, canvas.height);
       
-      // Add restaurant name below QR code
       if (restaurant?.name) {
         context.font = "bold 24px Playfair Display, serif";
         context.textAlign = "center";
-        context.fillStyle = "#8B2635"; // restaurant-burgundy
+        context.fillStyle = "#000000";
         context.fillText(restaurant.name, canvas.width / 2, canvas.height + 40);
         
-        // You might need to increase canvas height to accommodate text
         const newCanvas = document.createElement("canvas");
         newCanvas.width = canvas.width;
         newCanvas.height = canvas.height + 60;
@@ -123,19 +120,16 @@ const QRCodePage = () => {
         newContext.fillRect(0, 0, newCanvas.width, newCanvas.height);
         newContext.drawImage(canvas, 0, 0);
         
-        // Re-add the text
         newContext.font = "bold 24px Playfair Display, serif";
         newContext.textAlign = "center";
-        newContext.fillStyle = "#8B2635";
+        newContext.fillStyle = "#000000";
         newContext.fillText(restaurant.name, newCanvas.width / 2, canvas.height + 40);
         
-        // Create download link
         const link = document.createElement("a");
         link.download = `${restaurant.name.replace(/\s/g, "-")}-menu-qr.png`;
         link.href = newCanvas.toDataURL("image/png");
         link.click();
       } else {
-        // Create download link without text
         const link = document.createElement("a");
         link.download = "menu-qr.png";
         link.href = canvas.toDataURL("image/png");
@@ -150,8 +144,8 @@ const QRCodePage = () => {
     return (
       <div className="page-container flex items-center justify-center min-h-[60vh]">
         <div className="flex flex-col items-center">
-          <RefreshCcw className="h-8 w-8 animate-spin text-restaurant-burgundy" />
-          <p className="mt-4 text-lg">Loading QR code generator...</p>
+          <RefreshCcw className="h-8 w-8 animate-spin text-black" />
+          <p className="mt-4 text-lg text-black">Loading QR code generator...</p>
         </div>
       </div>
     );
@@ -159,15 +153,15 @@ const QRCodePage = () => {
 
   return (
     <div className="page-container">
-      <h1 className="text-4xl font-bold font-display mb-8 text-restaurant-burgundy">QR Code Generator</h1>
+      <h1 className="text-4xl font-bold font-display mb-8 text-black">QR Code Generator</h1>
       
       {restaurant ? (
         <div className="grid md:grid-cols-2 gap-8">
           <div>
-            <Card className="restaurant-card">
+            <Card className="bg-white border border-gray-200">
               <CardHeader>
-                <CardTitle>Menu QR Code</CardTitle>
-                <CardDescription>
+                <CardTitle className="text-black">Menu QR Code</CardTitle>
+                <CardDescription className="text-gray-600">
                   {restaurant.isPublic 
                     ? "Your menu is public and accessible via this QR code" 
                     : "Your menu is private. Make it public to allow customers to access it"}
@@ -176,7 +170,7 @@ const QRCodePage = () => {
               <CardContent className="flex justify-center">
                 <div 
                   ref={qrRef}
-                  className={`p-6 bg-white rounded-lg border ${restaurant.isPublic ? "" : "opacity-50"}`}
+                  className={`p-6 bg-white rounded-lg border border-gray-200 ${restaurant.isPublic ? "" : "opacity-50"}`}
                 >
                   <QRCodeSVG
                     value={menuUrl}
@@ -189,14 +183,14 @@ const QRCodePage = () => {
                 </div>
               </CardContent>
               <CardFooter className="flex flex-col space-y-4">
-                <div className="flex items-center space-x-2 w-full bg-white/10 p-2 rounded-md">
+                <div className="flex items-center space-x-2 w-full bg-gray-50 p-2 rounded-md">
                   <Switch
                     checked={restaurant.isPublic}
                     onCheckedChange={handlePublicToggle}
                     disabled={toggleLoading}
-                    className="data-[state=checked]:bg-primary data-[state=unchecked]:bg-gray-400"
+                    className="data-[state=checked]:bg-black data-[state=unchecked]:bg-gray-400"
                   />
-                  <Label htmlFor="public-mode" className="text-primary font-medium">
+                  <Label htmlFor="public-mode" className="text-black font-medium">
                     {restaurant.isPublic ? "Menu is Public" : "Menu is Private"}
                   </Label>
                 </div>
@@ -204,7 +198,7 @@ const QRCodePage = () => {
                 <Button
                   onClick={downloadQRCode}
                   disabled={!restaurant.isPublic}
-                  className="w-full bg-restaurant-burgundy hover:bg-restaurant-burgundy/90"
+                  className="w-full bg-black text-white hover:bg-gray-800"
                 >
                   <Download className="h-4 w-4 mr-2" />
                   Download QR Code
@@ -214,22 +208,22 @@ const QRCodePage = () => {
           </div>
           
           <div className="space-y-6">
-            <Card className="restaurant-card">
+            <Card className="bg-white border border-gray-200">
               <CardHeader>
-                <CardTitle>Menu URL</CardTitle>
-                <CardDescription>
+                <CardTitle className="text-black">Menu URL</CardTitle>
+                <CardDescription className="text-gray-600">
                   Share this link directly with your customers
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="p-4 bg-gray-50 rounded-md overflow-x-auto">
-                  <code className="text-sm break-all">{menuUrl}</code>
+                  <code className="text-sm break-all text-black">{menuUrl}</code>
                 </div>
               </CardContent>
               <CardFooter>
                 <Button
                   variant="outline"
-                  className="w-full"
+                  className="w-full border-gray-300 bg-white hover:bg-gray-50 text-black"
                   onClick={() => {
                     navigator.clipboard.writeText(menuUrl);
                     toast({
@@ -243,12 +237,12 @@ const QRCodePage = () => {
               </CardFooter>
             </Card>
             
-            <Card className="restaurant-card">
+            <Card className="bg-white border border-gray-200">
               <CardHeader>
-                <CardTitle>How to Use</CardTitle>
+                <CardTitle className="text-black">How to Use</CardTitle>
               </CardHeader>
               <CardContent>
-                <ol className="list-decimal list-inside space-y-2">
+                <ol className="list-decimal list-inside space-y-2 text-black">
                   <li>Make your menu public using the toggle switch</li>
                   <li>Download the QR code image</li>
                   <li>Print and place the QR code on your restaurant tables</li>
@@ -260,8 +254,8 @@ const QRCodePage = () => {
           </div>
         </div>
       ) : (
-        <div className="text-center py-12">
-          <h2 className="text-2xl font-semibold">Restaurant Not Found</h2>
+        <div className="text-center py-12 bg-white border border-gray-200 rounded-lg">
+          <h2 className="text-2xl font-semibold text-black">Restaurant Not Found</h2>
           <p className="mt-2 text-gray-600">
             You need to set up your restaurant profile before generating a QR code.
           </p>
