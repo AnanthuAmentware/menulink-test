@@ -5,7 +5,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
-import { ThemeProvider } from "./contexts/ThemeContext";
 
 // Pages
 import Home from "./pages/Home";
@@ -15,7 +14,6 @@ import Dashboard from "./pages/Dashboard";
 import MenuBuilder from "./pages/MenuBuilder";
 import QRCodePage from "./pages/QRCode";
 import EditProfile from "./pages/EditProfile";
-import ThemeCustomization from "./pages/ThemeCustomization";
 import Menu from "./pages/Menu";
 import Admin from "./pages/Admin";
 import AdminEdit from "./pages/AdminEdit";
@@ -50,7 +48,6 @@ const AppContent = () => {
             <Route path="/menu-builder" element={<MenuBuilder />} />
             <Route path="/qr-code" element={<QRCodePage />} />
             <Route path="/edit-profile" element={<EditProfile />} />
-            <Route path="/theme" element={<ThemeCustomization />} />
           </Route>
           
           {/* Admin routes */}
@@ -70,15 +67,13 @@ const AppContent = () => {
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
-      <ThemeProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <AppContent />
-          </BrowserRouter>
-        </TooltipProvider>
-      </ThemeProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <AppContent />
+        </BrowserRouter>
+      </TooltipProvider>
     </AuthProvider>
   </QueryClientProvider>
 );
