@@ -29,7 +29,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MenuSection, MenuItem, PriceVariation } from "@/types";
-import { Plus, Trash2, MoveVertical, Save, Edit, RefreshCcw, AlertCircle, XCircle, MoreVertical } from "lucide-react";
+import { Plus, Trash2, MoveVertical, Save, Edit, RefreshCcw, AlertCircle, XCircle, MoreVertical, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { v4 as uuidv4 } from "uuid";
 import { 
@@ -91,72 +91,72 @@ const SortableMenuItem = ({
       ref={setNodeRef}
       style={style}
       {...attributes}
-      className={`bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200 mb-3 p-4 ${item.isDisabled ? 'opacity-60' : ''}`}
+      className={`bg-white rounded-2xl border-2 border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 hover:border-blue-200 mb-4 p-6 ${item.isDisabled ? 'opacity-60' : ''}`}
     >
       <div className="flex items-center justify-between">
         <div className="flex-1 min-w-0">
           <div className="flex justify-between items-start">
-            <div className="font-semibold truncate flex items-center gap-2 text-gray-900">
+            <div className="font-bold text-lg truncate flex items-center gap-3 text-gray-900">
               {item.name}
               {item.outOfStock && (
-                <span className="text-xs px-2 py-1 bg-orange-100 text-orange-700 rounded-full font-medium">Out of Stock</span>
+                <span className="text-xs px-3 py-1 bg-orange-100 text-orange-700 rounded-full font-medium">Out of Stock</span>
               )}
               {item.isDisabled && (
-                <span className="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded-full font-medium">Disabled</span>
+                <span className="text-xs px-3 py-1 bg-gray-100 text-gray-600 rounded-full font-medium">Disabled</span>
               )}
             </div>
             <div className="text-primary font-bold ml-2">
               {item.priceVariations && item.priceVariations.length > 0 ? (
-                <span className="text-green-600">{`${currencySymbol}${item.priceVariations[0].price.toFixed(2)}+`}</span>
+                <span className="text-green-600 text-xl">{`${currencySymbol}${item.priceVariations[0].price.toFixed(2)}+`}</span>
               ) : (
-                item.price ? <span className="text-green-600">{currencySymbol}{item.price.toFixed(2)}</span> : <span className="text-gray-400">-</span>
+                item.price ? <span className="text-green-600 text-xl">{currencySymbol}{item.price.toFixed(2)}</span> : <span className="text-gray-400">-</span>
               )}
             </div>
           </div>
-          <div className="text-sm text-gray-500 truncate mt-1">{item.description}</div>
+          <div className="text-sm text-gray-600 truncate mt-2 leading-relaxed">{item.description}</div>
         </div>
         
-        <div className={`flex items-center ml-4 ${isMobile ? 'flex-col gap-1' : 'gap-2'}`}>
+        <div className={`flex items-center ml-4 ${isMobile ? 'flex-col gap-2' : 'gap-3'}`}>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button 
                 size="sm" 
                 variant="outline"
-                className="h-8 px-2 border-gray-200 hover:bg-gray-50"
+                className="h-10 px-3 border-gray-200 hover:bg-gray-50 rounded-xl"
               >
                 <MoreVertical className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-40">
+            <DropdownMenuContent align="end" className="w-40 rounded-xl border border-gray-100 shadow-lg">
               <DropdownMenuItem 
                 onClick={() => onStatusChange(item.id, 'active')}
-                className={getItemStatus() === 'active' ? 'bg-green-50 text-green-700 font-medium' : ''}
+                className={`rounded-lg ${getItemStatus() === 'active' ? 'bg-green-50 text-green-700 font-medium' : ''}`}
               >
                 Active
               </DropdownMenuItem>
               <DropdownMenuItem 
                 onClick={() => onStatusChange(item.id, 'outOfStock')}
-                className={getItemStatus() === 'outOfStock' ? 'bg-orange-50 text-orange-700 font-medium' : ''}
+                className={`rounded-lg ${getItemStatus() === 'outOfStock' ? 'bg-orange-50 text-orange-700 font-medium' : ''}`}
               >
                 Out of Stock
               </DropdownMenuItem>
               <DropdownMenuItem 
                 onClick={() => onStatusChange(item.id, 'disabled')}
-                className={getItemStatus() === 'disabled' ? 'bg-gray-50 text-gray-700 font-medium' : ''}
+                className={`rounded-lg ${getItemStatus() === 'disabled' ? 'bg-gray-50 text-gray-700 font-medium' : ''}`}
               >
                 Disabled
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
           
-          <Button size="sm" variant="outline" onClick={() => onEdit(item)} className="h-8 px-2 border-gray-200 hover:bg-gray-50">
+          <Button size="sm" variant="outline" onClick={() => onEdit(item)} className="h-10 px-3 border-gray-200 hover:bg-gray-50 rounded-xl">
             <Edit className="h-4 w-4" />
           </Button>
-          <Button size="sm" variant="outline" onClick={() => onDelete(item.id)} className="h-8 px-2 border-red-200 text-red-600 hover:bg-red-50">
+          <Button size="sm" variant="outline" onClick={() => onDelete(item.id)} className="h-10 px-3 border-red-200 text-red-600 hover:bg-red-50 rounded-xl">
             <Trash2 className="h-4 w-4" />
           </Button>
-          <div {...listeners} className="cursor-move p-1 rounded hover:bg-gray-100">
-            <MoveVertical className="h-4 w-4 text-gray-400" />
+          <div {...listeners} className="cursor-move p-2 rounded-xl hover:bg-gray-100 transition-colors">
+            <MoveVertical className="h-5 w-5 text-gray-400" />
           </div>
         </div>
       </div>
@@ -226,24 +226,27 @@ const SortableMenuSection = ({
     <Card
       ref={setNodeRef}
       style={style}
-      className={`bg-gradient-to-br from-white to-gray-50 border-2 shadow-sm hover:shadow-md transition-all duration-200 ${section.isDisabled ? 'border-gray-300 opacity-75' : 'border-blue-200'}`}
+      className={`bg-gradient-to-br from-white via-blue-50/30 to-indigo-50/30 border-2 shadow-lg hover:shadow-xl transition-all duration-300 rounded-3xl ${section.isDisabled ? 'border-gray-300 opacity-75' : 'border-blue-200'}`}
     >
-      <CardHeader className="pb-4">
-        <div className={`flex ${isMobile ? 'flex-col gap-3' : 'justify-between items-center'}`}>
-          <div className="flex items-center gap-3">
-            <div {...listeners} className="cursor-move p-1 rounded hover:bg-gray-100">
-              <MoveVertical className="h-5 w-5 text-gray-400" />
+      <CardHeader className="pb-6">
+        <div className={`flex ${isMobile ? 'flex-col gap-4' : 'justify-between items-center'}`}>
+          <div className="flex items-center gap-4">
+            <div {...listeners} className="cursor-move p-3 rounded-2xl hover:bg-white/80 transition-colors">
+              <MoveVertical className="h-6 w-6 text-gray-400" />
             </div>
             <div>
-              <h3 className="text-xl font-bold text-gray-900">{section.name}</h3>
-              {section.isDisabled && (
-                <span className="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded-full font-medium">Section Disabled</span>
-              )}
+              <h3 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
+                {section.name}
+                {section.isDisabled && (
+                  <span className="text-xs px-3 py-1 bg-gray-100 text-gray-600 rounded-full font-medium">Section Disabled</span>
+                )}
+              </h3>
+              <p className="text-sm text-gray-500 mt-1">{section.items.length} items</p>
             </div>
           </div>
           
-          <div className="flex flex-wrap gap-2 items-center">
-            <div className="flex items-center gap-2">
+          <div className="flex flex-wrap gap-3 items-center">
+            <div className="flex items-center gap-3 bg-white rounded-full px-4 py-2 border border-gray-200 shadow-sm">
               <Label htmlFor={`section-disabled-${section.id}`} className="text-sm font-medium">Disabled</Label>
               <Switch 
                 id={`section-disabled-${section.id}`} 
@@ -256,25 +259,25 @@ const SortableMenuSection = ({
               variant="outline" 
               size="sm"
               onClick={() => onEdit(section)}
-              className="border-gray-200 hover:bg-gray-50"
+              className="rounded-full px-4 py-2 border-gray-200 hover:bg-gray-50"
             >
-              <Edit className="h-4 w-4 mr-1" />
+              <Edit className="h-4 w-4 mr-2" />
               Edit
             </Button>
             <Button 
               variant="outline" 
               size="sm"
               onClick={() => onAddItem(section.id)}
-              className="bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100"
+              className="rounded-full px-4 py-2 bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100"
             >
-              <Plus className="h-4 w-4 mr-1" />
+              <Plus className="h-4 w-4 mr-2" />
               Add Item
             </Button>
             <Button 
               variant="outline" 
               size="sm"
               onClick={() => onDelete(section.id)}
-              className="border-red-200 text-red-600 hover:bg-red-50"
+              className="rounded-full px-4 py-2 border-red-200 text-red-600 hover:bg-red-50"
             >
               <Trash2 className="h-4 w-4 mr-1" />
               Delete
@@ -283,7 +286,7 @@ const SortableMenuSection = ({
         </div>
       </CardHeader>
       
-      <CardContent>
+      <CardContent className="px-8 pb-8">
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}
@@ -293,7 +296,7 @@ const SortableMenuSection = ({
             items={section.items.map(item => item.id)}
             strategy={verticalListSortingStrategy}
           >
-            <div className="space-y-2">
+            <div className="space-y-3">
               {section.items.length > 0 ? (
                 section.items.map(item => (
                   <SortableMenuItem
@@ -306,16 +309,21 @@ const SortableMenuSection = ({
                   />
                 ))
               ) : (
-                <div className="text-center py-12 border-2 border-dashed border-gray-200 rounded-lg bg-gray-50">
-                  <p className="text-gray-500 mb-3">No items in this section</p>
-                  <Button 
-                    variant="outline" 
-                    className="bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100"
-                    onClick={() => onAddItem(section.id)}
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add First Item
-                  </Button>
+                <div className="text-center py-16 border-2 border-dashed border-gray-200 rounded-2xl bg-white/60">
+                  <div className="flex flex-col items-center">
+                    <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mb-4">
+                      <Plus className="h-8 w-8 text-blue-600" />
+                    </div>
+                    <p className="text-gray-600 mb-4 font-medium">No items in this section</p>
+                    <Button 
+                      variant="outline" 
+                      className="bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100 rounded-full px-6"
+                      onClick={() => onAddItem(section.id)}
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add First Item
+                    </Button>
+                  </div>
                 </div>
               )}
             </div>
@@ -729,49 +737,57 @@ const MenuBuilder = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
-        <div className="flex flex-col items-center bg-white rounded-2xl p-8 shadow-lg">
-          <div className="animate-spin rounded-full h-12 w-12 border-2 border-gray-300 border-t-blue-600 mb-4"></div>
-          <p className="text-lg font-medium text-gray-700">Loading menu builder...</p>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50/50 to-indigo-50/50 flex items-center justify-center p-4">
+        <div className="flex flex-col items-center bg-white rounded-3xl p-12 shadow-lg border border-gray-100">
+          <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mb-6">
+            <RefreshCcw className="h-8 w-8 animate-spin text-blue-600" />
+          </div>
+          <p className="text-xl font-semibold text-gray-700">Loading menu builder...</p>
+          <p className="text-sm text-gray-500 mt-2">Please wait while we prepare your workspace</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      <div className="max-w-6xl mx-auto px-4 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50/50 to-indigo-50/50">
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 py-12">
         {/* Header */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-8">
+        <div className="bg-white rounded-3xl shadow-lg border border-gray-100 p-8 mb-12">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-            <div className="mb-4 md:mb-0">
-              <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Menu Builder</h1>
-              <p className="text-gray-600">Create and manage your restaurant menu</p>
+            <div className="mb-6 md:mb-0">
+              <div className="flex items-center gap-4 mb-3">
+                <div className="w-14 h-14 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center">
+                  <Sparkles className="h-7 w-7 text-white" />
+                </div>
+                <h1 className="text-4xl md:text-5xl font-bold text-gray-900">Menu Builder</h1>
+              </div>
+              <p className="text-lg text-gray-600">Create and manage your restaurant menu with style</p>
             </div>
             
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap gap-4">
               <Button
                 variant="outline"
                 onClick={openAddSectionDialog}
-                className="bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100"
+                className="flex items-center rounded-full px-6 py-3 border-gray-200 hover:bg-gray-50 hover:border-blue-300 transition-all duration-200"
               >
-                <Plus className="h-4 w-4 mr-2" />
+                <Plus className="h-5 w-5 mr-2" />
                 Add Section
               </Button>
               
               <Button
                 onClick={handleSaveMenu}
                 disabled={saving || !menuChanged}
-                className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 shadow-md"
+                className="flex items-center rounded-full px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50"
               >
                 {saving ? (
                   <>
-                    <RefreshCcw className="h-4 w-4 mr-2 animate-spin" />
+                    <RefreshCcw className="h-5 w-5 mr-2 animate-spin" />
                     Saving...
                   </>
                 ) : (
                   <>
-                    <Save className="h-4 w-4 mr-2" />
+                    <Save className="h-5 w-5 mr-2" />
                     Save Menu
                   </>
                 )}
@@ -781,24 +797,22 @@ const MenuBuilder = () => {
         </div>
 
         {menuSections.length === 0 ? (
-          <Card className="bg-white shadow-sm border border-gray-200">
-            <CardContent className="flex flex-col items-center justify-center py-20">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-6">
-                <Plus className="h-8 w-8 text-blue-600" />
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">Your menu is empty</h3>
-              <p className="mb-8 text-center max-w-md text-gray-600">
-                Start by adding a section to your menu, then add items to each section.
-              </p>
-              <Button
-                onClick={openAddSectionDialog}
-                className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 shadow-md"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Add Your First Section
-              </Button>
-            </CardContent>
-          </Card>
+          <div className="bg-white rounded-3xl border border-gray-100 p-20 text-center shadow-lg">
+            <div className="w-24 h-24 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-3xl flex items-center justify-center mx-auto mb-8">
+              <Plus className="h-12 w-12 text-blue-600" />
+            </div>
+            <h3 className="text-3xl font-bold text-gray-900 mb-4">Your menu is empty</h3>
+            <p className="text-gray-600 mb-8 max-w-md mx-auto text-lg leading-relaxed">
+              Start by adding a section to your menu, then add items to each section to create your perfect dining experience.
+            </p>
+            <Button
+              onClick={openAddSectionDialog}
+              className="flex items-center rounded-full px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 shadow-lg hover:shadow-xl transition-all duration-200 text-lg"
+            >
+              <Plus className="h-5 w-5 mr-2" />
+              Add Your First Section
+            </Button>
+          </div>
         ) : (
           <DndContext
             sensors={sensors}
@@ -809,7 +823,7 @@ const MenuBuilder = () => {
               items={menuSections.map(section => section.id)}
               strategy={verticalListSortingStrategy}
             >
-              <div className="space-y-6">
+              <div className="space-y-8">
                 {menuSections.map(section => (
                   <SortableMenuSection
                     key={section.id}
@@ -832,20 +846,20 @@ const MenuBuilder = () => {
 
         {/* Section Dialog */}
         <Dialog open={sectionDialogOpen} onOpenChange={setSectionDialogOpen}>
-          <DialogContent className={`bg-white ${isMobile ? 'w-[90vw] max-w-none mx-auto' : ''}`}>
+          <DialogContent className={`bg-white rounded-3xl ${isMobile ? 'w-[90vw] max-w-none mx-auto' : ''}`}>
             <DialogHeader>
-              <DialogTitle>
+              <DialogTitle className="text-2xl">
                 {currentSection ? "Edit Section" : "Add Section"}
               </DialogTitle>
-              <DialogDescription>
+              <DialogDescription className="text-base">
                 {currentSection
                   ? "Update the name of this menu section"
                   : "Add a new section to organize your menu items"}
               </DialogDescription>
             </DialogHeader>
             
-            <div className="grid gap-4 py-4">
-              <div className="space-y-2">
+            <div className="grid gap-6 py-6">
+              <div className="space-y-3">
                 <label htmlFor="name" className="text-sm font-medium">
                   Section Name
                 </label>
@@ -854,18 +868,18 @@ const MenuBuilder = () => {
                   value={sectionName}
                   onChange={(e) => setSectionName(e.target.value)}
                   placeholder="e.g., Appetizers, Main Course, Desserts"
-                  className="border-gray-300"
+                  className="border-gray-300 rounded-xl h-12"
                 />
               </div>
             </div>
             
             <DialogFooter>
-              <Button variant="outline" onClick={() => setSectionDialogOpen(false)} className="border-gray-300">
+              <Button variant="outline" onClick={() => setSectionDialogOpen(false)} className="border-gray-300 rounded-xl">
                 Cancel
               </Button>
               <Button 
                 onClick={handleSaveSection}
-                className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700"
+                className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 rounded-xl"
               >
                 {currentSection ? "Update Section" : "Add Section"}
               </Button>
@@ -875,20 +889,20 @@ const MenuBuilder = () => {
 
         {/* Item Dialog */}
         <Dialog open={itemDialogOpen} onOpenChange={setItemDialogOpen}>
-          <DialogContent className={`bg-white ${isMobile ? 'w-[90vw] max-w-none mx-auto' : 'sm:max-w-[500px]'} max-h-[90vh] overflow-y-auto`}>
+          <DialogContent className={`bg-white rounded-3xl ${isMobile ? 'w-[90vw] max-w-none mx-auto' : 'sm:max-w-[500px]'} max-h-[90vh] overflow-y-auto`}>
             <DialogHeader>
-              <DialogTitle>
+              <DialogTitle className="text-2xl">
                 {currentItem ? "Edit Menu Item" : "Add Menu Item"}
               </DialogTitle>
-              <DialogDescription>
+              <DialogDescription className="text-base">
                 {currentItem
                   ? "Update details for this menu item"
                   : "Add details for your new menu item"}
               </DialogDescription>
             </DialogHeader>
             
-            <div className="grid gap-4 py-4">
-              <div className="space-y-2">
+            <div className="grid gap-6 py-6">
+              <div className="space-y-3">
                 <label htmlFor="item-name" className="text-sm font-medium">
                   Item Name
                 </label>
@@ -897,11 +911,11 @@ const MenuBuilder = () => {
                   value={itemName}
                   onChange={(e) => setItemName(e.target.value)}
                   placeholder="e.g., Caesar Salad"
-                  className="border-gray-300"
+                  className="border-gray-300 rounded-xl h-12"
                 />
               </div>
               
-              <div className={`space-y-2 ${priceVariations.length > 0 ? 'opacity-50' : ''}`}>
+              <div className={`space-y-3 ${priceVariations.length > 0 ? 'opacity-50' : ''}`}>
                 <label htmlFor="item-price" className="text-sm font-medium flex justify-between">
                   <span>Base Price {priceVariations.length > 0 && "(Not used with variations)"}</span>
                   {priceVariations.length > 0 && 
@@ -909,7 +923,7 @@ const MenuBuilder = () => {
                   }
                 </label>
                 <div className="flex items-center">
-                  <span className="mr-1">{currencySymbol}</span>
+                  <span className="mr-2 text-lg">{currencySymbol}</span>
                   <Input
                     id="item-price"
                     value={itemPrice}
@@ -919,7 +933,7 @@ const MenuBuilder = () => {
                     step="0.01"
                     min="0"
                     disabled={priceVariations.length > 0}
-                    className="border-gray-300"
+                    className="border-gray-300 rounded-xl h-12"
                   />
                 </div>
               </div>
@@ -931,22 +945,22 @@ const MenuBuilder = () => {
                     type="button" 
                     size="sm" 
                     onClick={handleAddVariation}
-                    className="bg-blue-600 text-white hover:bg-blue-700"
+                    className="bg-blue-600 text-white hover:bg-blue-700 rounded-xl"
                   >
                     <Plus className="h-4 w-4 mr-1" /> Add Variation
                   </Button>
                 </div>
                 
                 {priceVariations.map((variation, index) => (
-                  <div key={index} className={`${isMobile ? 'flex flex-col gap-2' : 'flex items-center space-x-2'}`}>
+                  <div key={index} className={`${isMobile ? 'flex flex-col gap-3' : 'flex items-center space-x-3'}`}>
                     <Input
                       placeholder="Name (e.g., Quarter, Half)"
                       value={variation.name}
                       onChange={(e) => handleUpdateVariation(index, 'name', e.target.value)}
-                      className="flex-1 border-gray-300"
+                      className="flex-1 border-gray-300 rounded-xl h-12"
                     />
                     <div className="flex items-center">
-                      <span className="mr-1">{currencySymbol}</span>
+                      <span className="mr-2 text-lg">{currencySymbol}</span>
                       <Input
                         placeholder="Price"
                         type="number"
@@ -954,7 +968,7 @@ const MenuBuilder = () => {
                         min="0"
                         value={variation.price}
                         onChange={(e) => handleUpdateVariation(index, 'price', e.target.value)}
-                        className={`border-gray-300 ${isMobile ? "flex-1" : "w-24"}`}
+                        className={`border-gray-300 rounded-xl h-12 ${isMobile ? "flex-1" : "w-28"}`}
                       />
                     </div>
                     <Button 
@@ -962,7 +976,7 @@ const MenuBuilder = () => {
                       size="icon" 
                       variant="ghost" 
                       onClick={() => handleRemoveVariation(index)}
-                      className="text-red-500 hover:bg-red-50"
+                      className="text-red-500 hover:bg-red-50 rounded-xl"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -976,7 +990,7 @@ const MenuBuilder = () => {
                 }
               </div>
               
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <label htmlFor="item-description" className="text-sm font-medium">
                   Description
                 </label>
@@ -986,11 +1000,11 @@ const MenuBuilder = () => {
                   onChange={(e) => setItemDescription(e.target.value)}
                   placeholder="Describe this item..."
                   rows={3}
-                  className="border-gray-300 resize-none"
+                  className="border-gray-300 resize-none rounded-xl"
                 />
               </div>
               
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <label htmlFor="item-image" className="text-sm font-medium">
                   Image URL (Optional)
                 </label>
@@ -999,16 +1013,16 @@ const MenuBuilder = () => {
                   value={itemImageUrl}
                   onChange={(e) => setItemImageUrl(e.target.value)}
                   placeholder="https://example.com/image.jpg"
-                  className="border-gray-300"
+                  className="border-gray-300 rounded-xl h-12"
                 />
                 <p className="text-xs text-gray-500">
                   Images are optional. For best results, use square images (1:1 aspect ratio)
                 </p>
                 
                 {itemImageUrl && (
-                  <div className="mt-2 border rounded-md p-2">
-                    <p className="text-xs font-medium mb-1">Image Preview:</p>
-                    <div className="aspect-square w-24 h-24 overflow-hidden rounded-md bg-gray-100">
+                  <div className="mt-3 border rounded-xl p-3">
+                    <p className="text-xs font-medium mb-2">Image Preview:</p>
+                    <div className="aspect-square w-24 h-24 overflow-hidden rounded-xl bg-gray-100">
                       <img 
                         src={itemImageUrl} 
                         alt="Preview" 
@@ -1023,13 +1037,13 @@ const MenuBuilder = () => {
               </div>
             </div>
             
-            <DialogFooter className={isMobile ? "flex-col space-y-2" : ""}>
-              <Button variant="outline" onClick={() => setItemDialogOpen(false)} className="border-gray-300">
+            <DialogFooter className={isMobile ? "flex-col space-y-3" : ""}>
+              <Button variant="outline" onClick={() => setItemDialogOpen(false)} className="border-gray-300 rounded-xl">
                 Cancel
               </Button>
               <Button 
                 onClick={handleSaveItem}
-                className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700"
+                className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 rounded-xl"
               >
                 {currentItem ? "Update Item" : "Add Item"}
               </Button>
