@@ -55,6 +55,7 @@ const Dashboard = () => {
   ) || 0;
 
   const sectionsCount = restaurant?.menuSections?.length || 0;
+  const qrScans = restaurant?.qrScans || 0;
 
   // Create chart data for menu sections
   const chartData = restaurant?.menuSections?.map(section => ({
@@ -95,14 +96,12 @@ const Dashboard = () => {
               value={sectionsCount}
               description="Active menu categories"
               icon={BarChart3}
-              trend={{ value: 12, isPositive: true }}
             />
             <StatsCard
               title="Menu Items"
               value={menuItemsCount}
               description="Total items in menu"
               icon={MenuIcon}
-              trend={{ value: 8, isPositive: true }}
             />
             <StatsCard
               title="Status"
@@ -112,10 +111,9 @@ const Dashboard = () => {
             />
             <StatsCard
               title="QR Scans"
-              value="247"
-              description="This month"
+              value={qrScans}
+              description="Total scans"
               icon={QrCode}
-              trend={{ value: 23, isPositive: true }}
             />
           </div>
 

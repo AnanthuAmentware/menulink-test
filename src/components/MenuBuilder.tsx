@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { db, doc, getDoc, updateDoc } from "../lib/firebase";
@@ -23,7 +24,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MenuSection, MenuItem, PriceVariation } from "@/types";
-import { Plus, Trash2, MoveVertical, Save, Edit, RefreshCcw, XCircle } from "lucide-react";
+import { Plus, Trash2, MoveVertical, Save, Edit, RefreshCcw, XCircle, Eye, EyeOff } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { v4 as uuidv4 } from "uuid";
 import { 
@@ -39,7 +40,8 @@ import {
   arrayMove,
   SortableContext,
   useSortable,
-  verticalListSortingStrategy
+  verticalListSortingStrategy,
+  sortableKeyboardCoordinates
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { useIsMobile } from "@/hooks/use-mobile";

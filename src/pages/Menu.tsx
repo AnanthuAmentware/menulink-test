@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { db, doc, getDoc } from '@/lib/firebase';
@@ -97,24 +98,16 @@ const Menu = () => {
           )}
           
           <div className="flex flex-wrap justify-center gap-6 text-sm">
-            {restaurant.address && (
+            {restaurant.location && (
               <div className="flex items-center gap-2">
                 <MapPin className="h-4 w-4" />
-                <span>{restaurant.address}</span>
+                <span>{restaurant.location}</span>
               </div>
             )}
-            {restaurant.phone && (
+            {restaurant.contact && (
               <div className="flex items-center gap-2">
                 <Phone className="h-4 w-4" />
-                <span>{restaurant.phone}</span>
-              </div>
-            )}
-            {restaurant.website && (
-              <div className="flex items-center gap-2">
-                <Globe className="h-4 w-4" />
-                <a href={restaurant.website} target="_blank" rel="noopener noreferrer" className="hover:underline">
-                  Website
-                </a>
+                <span>{restaurant.contact}</span>
               </div>
             )}
           </div>
