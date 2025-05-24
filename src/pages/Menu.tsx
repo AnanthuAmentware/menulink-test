@@ -49,26 +49,7 @@ const Menu = () => {
         }
         
         console.log("Restaurant data loaded:", restaurantData);
-
         setRestaurant(restaurantData);
-
-        // Apply theme variables
-        const root = document.documentElement;
-        if (restaurantData.theme) {
-          // Colors
-          root.style.setProperty('--restaurant-burgundy', restaurantData.theme.colors.primary);
-          root.style.setProperty('--restaurant-cream', restaurantData.theme.colors.secondary);
-          root.style.setProperty('--restaurant-gold', restaurantData.theme.colors.accent);
-          root.style.setProperty('--restaurant-dark', restaurantData.theme.colors.text);
-          root.style.setProperty('--restaurant-light', restaurantData.theme.colors.background);
-          
-          // Currency symbol
-          if (restaurantData.theme.currencySymbol) {
-            root.style.setProperty('--currency-symbol', `"${restaurantData.theme.currencySymbol}"`);
-          } else {
-            root.style.setProperty('--currency-symbol', '"₹"'); // Default to Rupees
-          }
-        }
 
       } catch (err) {
         console.error("Error fetching menu data:", err);
@@ -83,10 +64,10 @@ const Menu = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4 bg-restaurant-cream/10">
+      <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-amber-50 to-orange-100">
         <div className="text-center">
-          <RefreshCcw className="h-10 w-10 mx-auto animate-spin text-restaurant-burgundy" />
-          <p className="mt-4 text-xl">Loading menu...</p>
+          <RefreshCcw className="h-10 w-10 mx-auto animate-spin text-amber-600" />
+          <p className="mt-4 text-xl text-amber-800">Loading menu...</p>
         </div>
       </div>
     );
@@ -94,9 +75,9 @@ const Menu = () => {
 
   if (error || !restaurant) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4 bg-restaurant-cream/10">
+      <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-amber-50 to-orange-100">
         <Card className="w-full max-w-md text-center p-8 glass-card">
-          <h2 className="text-2xl font-bold font-display mb-4 text-restaurant-burgundy">Menu Unavailable</h2>
+          <h2 className="text-2xl font-bold font-display mb-4 text-amber-800">Menu Unavailable</h2>
           <p className="text-gray-600 mb-6">{error || "Menu could not be loaded"}</p>
           {error === "This menu is private" && (
             <div className="flex flex-col items-center justify-center gap-2">
@@ -115,19 +96,19 @@ const Menu = () => {
   // Filter out disabled sections
   const visibleSections = restaurant?.menuSections?.filter(section => !section.isDisabled) || [];
   
-  // Get currency symbol from theme or use default
-  const currencySymbol = restaurant?.theme?.currencySymbol || '₹';
+  // Get currency symbol from restaurant or use default
+  const currencySymbol = restaurant?.currencySymbol || '₹';
 
   return (
-    <div className="min-h-screen bg-restaurant-cream/10 p-4 md:p-6 lg:p-8">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100 p-4 md:p-6 lg:p-8">
       <div className="max-w-4xl mx-auto">
         {/* Restaurant Header */}
-        <div className="glass-card shadow-lg rounded-lg p-6 mb-8 border-t-4" style={{borderTopColor: 'var(--restaurant-burgundy)'}}>
-          <h1 className="text-3xl md:text-4xl font-bold font-display mb-2 text-restaurant-burgundy">
+        <div className="glass-card shadow-lg rounded-lg p-6 mb-8 border-t-4 border-amber-600">
+          <h1 className="text-3xl md:text-4xl font-bold font-display mb-2 text-amber-800">
             {restaurant.name}
           </h1>
           
-          <div className="flex flex-wrap gap-2 text-sm mb-4 text-restaurant-dark">
+          <div className="flex flex-wrap gap-2 text-sm mb-4 text-gray-700">
             {restaurant.location && (
               <div className="flex items-center">
                 <MapPin className="h-4 w-4 mr-1" />
@@ -143,7 +124,7 @@ const Menu = () => {
           </div>
           
           {restaurant.description && (
-            <p className="text-restaurant-dark">
+            <p className="text-gray-700">
               {restaurant.description}
             </p>
           )}
@@ -153,7 +134,7 @@ const Menu = () => {
         {visibleSections.length > 0 ? (
           visibleSections.map((section) => (
             <div key={section.id} className="menu-section mb-8">
-              <h2 className="text-2xl font-bold section-header mb-4 text-restaurant-burgundy">
+              <h2 className="text-2xl font-bold section-header mb-4 text-amber-800">
                 {section.name}
               </h2>
               
@@ -171,7 +152,7 @@ const Menu = () => {
                         <div>
                           <div className="flex justify-between items-start">
                             <div>
-                              <h3 className="font-bold text-lg text-restaurant-dark">
+                              <h3 className="font-bold text-lg text-gray-800">
                                 {item.name}
                                 {item.outOfStock && (
                                   <span className="ml-2 text-xs px-2 py-1 bg-red-100 text-red-800 rounded-full">
@@ -179,11 +160,11 @@ const Menu = () => {
                                   </span>
                                 )}
                               </h3>
-                              <p className="text-sm mt-1 text-restaurant-dark">
+                              <p className="text-sm mt-1 text-gray-600">
                                 {item.description}
                               </p>
                             </div>
-                            <div className="font-bold text-restaurant-burgundy">
+                            <div className="font-bold text-amber-700">
                               {item.priceVariations && item.priceVariations.length > 0 ? (
                                 <span>{currencySymbol}{item.priceVariations[0].price.toFixed(2)}</span>
                               ) : (
@@ -197,8 +178,8 @@ const Menu = () => {
                             <div className="mt-2 space-y-1">
                               {item.priceVariations.map((variation, index) => (
                                 <div key={index} className="flex justify-between text-sm">
-                                  <span className="text-restaurant-dark">{variation.name}</span>
-                                  <span className="font-medium text-restaurant-burgundy">
+                                  <span className="text-gray-600">{variation.name}</span>
+                                  <span className="font-medium text-amber-700">
                                     {currencySymbol}{variation.price.toFixed(2)}
                                   </span>
                                 </div>
@@ -221,7 +202,7 @@ const Menu = () => {
                     </Card>
                   ))
                 ) : (
-                  <p className="text-center py-4 italic glass-card p-6 col-span-2 text-restaurant-dark">
+                  <p className="text-center py-4 italic glass-card p-6 col-span-2 text-gray-600">
                     No items in this section
                   </p>
                 )}
@@ -230,17 +211,17 @@ const Menu = () => {
           ))
         ) : (
           <div className="text-center py-12 glass-card rounded-lg shadow">
-            <h2 className="text-2xl font-semibold mb-2 text-restaurant-burgundy">
+            <h2 className="text-2xl font-semibold mb-2 text-amber-800">
               Menu Coming Soon
             </h2>
-            <p className="text-restaurant-dark">
+            <p className="text-gray-600">
               This restaurant is still setting up their digital menu.
             </p>
           </div>
         )}
         
         {/* Footer */}
-        <div className="text-center text-sm mt-12 mb-6 text-restaurant-dark">
+        <div className="text-center text-sm mt-12 mb-6 text-gray-600">
           <p>Menu powered by MenuBuilder</p>
         </div>
       </div>

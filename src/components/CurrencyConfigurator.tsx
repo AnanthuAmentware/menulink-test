@@ -1,10 +1,12 @@
 
 import { useState, useEffect } from 'react';
-import { useTheme } from '@/contexts/ThemeContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { db, doc, updateDoc, getDoc } from '@/lib/firebase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Save } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 const COMMON_CURRENCIES = [
   { symbol: '₹', name: 'INR - Rupee' },
@@ -17,21 +19,38 @@ const COMMON_CURRENCIES = [
 ];
 
 const CurrencyConfigurator = () => {
-  const { theme, setTheme } = useTheme();
+  const { currentUser } = useAuth();
+  const { toast } = useToast();
   const [customSymbol, setCustomSymbol] = useState('');
-  const [selectedSymbol, setSelectedSymbol] = useState(theme.currencySymbol || '₹');
+  const [selectedSymbol, setSelectedSymbol] = useState('₹');
+  const [currentCurrencySymbol, setCurrentCurrencySymbol] = useState('₹');
   const [isSaving, setIsSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
 
-  // Update selected symbol when theme changes
+  // Fetch current currency symbol from restaurant data
   useEffect(() => {
-    setSelectedSymbol(theme.currencySymbol || '₹');
-    setHasChanges(false);
-  }, [theme.currencySymbol]);
+    const fetchCurrencySymbol = async () => {
+      if (!currentUser) return;
+      
+      try {
+        const restaurantDoc = await getDoc(doc(db, 'restaurants', currentUser.uid));
+        if (restaurantDoc.exists()) {
+          const data = restaurantDoc.data();
+          const currencySymbol = data.currencySymbol || '₹';
+          setCurrentCurrencySymbol(currencySymbol);
+          setSelectedSymbol(currencySymbol);
+        }
+      } catch (error) {
+        console.error("Error fetching currency symbol:", error);
+      }
+    };
+
+    fetchCurrencySymbol();
+  }, [currentUser]);
 
   const handleSelectCurrency = (symbol: string) => {
     setSelectedSymbol(symbol);
-    setHasChanges(true);
+    setHasChanges(selectedSymbol !== symbol);
   };
 
   const handleSetCustomCurrency = () => {
@@ -43,20 +62,28 @@ const CurrencyConfigurator = () => {
   };
 
   const handleSaveCurrency = async () => {
-    if (!hasChanges) return;
+    if (!hasChanges || !currentUser) return;
     
     setIsSaving(true);
     try {
-      // Create a new theme object with the updated currency symbol
-      const updatedTheme = {
-        ...theme,
+      await updateDoc(doc(db, 'restaurants', currentUser.uid), {
         currencySymbol: selectedSymbol
-      };
+      });
       
-      await setTheme(updatedTheme);
+      setCurrentCurrencySymbol(selectedSymbol);
       setHasChanges(false);
+      
+      toast({
+        title: "Currency Updated",
+        description: `Currency symbol changed to ${selectedSymbol}`,
+      });
     } catch (error) {
       console.error("Error saving currency:", error);
+      toast({
+        title: "Error",
+        description: "Failed to update currency symbol",
+        variant: "destructive",
+      });
     } finally {
       setIsSaving(false);
     }
@@ -74,7 +101,7 @@ const CurrencyConfigurator = () => {
       <CardContent>
         <div className="space-y-4">
           <div>
-            <p className="text-sm mb-2 font-medium">Current currency: <span className="font-bold text-primary">{theme.currencySymbol || '₹'}</span></p>
+            <p className="text-sm mb-2 font-medium">Current currency: <span className="font-bold text-primary">{currentCurrencySymbol}</span></p>
             <p className="text-sm mb-2 font-medium">Selected currency: <span className="font-bold text-accent">{selectedSymbol}</span></p>
             <p className="text-sm text-gray-500">Select from common currencies or enter your own custom symbol.</p>
           </div>
