@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { db, doc, getDoc, updateDoc } from "../lib/firebase";
@@ -92,71 +91,73 @@ const SortableMenuItem = ({
       ref={setNodeRef}
       style={style}
       {...attributes}
-      className={`glass-card mb-2 p-3 flex items-center justify-between ${item.isDisabled ? 'opacity-50' : ''}`}
+      className={`bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200 mb-3 p-4 ${item.isDisabled ? 'opacity-60' : ''}`}
     >
-      <div className="flex-1 min-w-0">
-        <div className="flex justify-between">
-          <div className="font-medium truncate flex items-center gap-2">
-            {item.name}
-            {item.outOfStock && (
-              <span className="text-xs px-2 py-0.5 bg-red-100 text-red-800 rounded-full">Out of Stock</span>
-            )}
-            {item.isDisabled && (
-              <span className="text-xs px-2 py-0.5 bg-gray-100 text-gray-800 rounded-full">Disabled</span>
-            )}
+      <div className="flex items-center justify-between">
+        <div className="flex-1 min-w-0">
+          <div className="flex justify-between items-start">
+            <div className="font-semibold truncate flex items-center gap-2 text-gray-900">
+              {item.name}
+              {item.outOfStock && (
+                <span className="text-xs px-2 py-1 bg-orange-100 text-orange-700 rounded-full font-medium">Out of Stock</span>
+              )}
+              {item.isDisabled && (
+                <span className="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded-full font-medium">Disabled</span>
+              )}
+            </div>
+            <div className="text-primary font-bold ml-2">
+              {item.priceVariations && item.priceVariations.length > 0 ? (
+                <span className="text-green-600">{`${currencySymbol}${item.priceVariations[0].price.toFixed(2)}+`}</span>
+              ) : (
+                item.price ? <span className="text-green-600">{currencySymbol}{item.price.toFixed(2)}</span> : <span className="text-gray-400">-</span>
+              )}
+            </div>
           </div>
-          <div className="text-primary font-bold">
-            {item.priceVariations && item.priceVariations.length > 0 ? (
-              <span>{`${currencySymbol}${item.priceVariations[0].price.toFixed(2)}+`}</span>
-            ) : (
-              item.price ? <span>{currencySymbol}{item.price.toFixed(2)}</span> : <span>-</span>
-            )}
-          </div>
+          <div className="text-sm text-gray-500 truncate mt-1">{item.description}</div>
         </div>
-        <div className="text-sm text-gray-400 truncate">{item.description}</div>
-      </div>
-      
-      <div className={`flex items-center ml-4 ${isMobile ? 'flex-col gap-1' : 'space-x-2'}`}>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button 
-              size="icon" 
-              variant="ghost"
-              className="hover:bg-white/10"
-            >
-              <MoreVertical className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem 
-              onClick={() => onStatusChange(item.id, 'active')}
-              className={getItemStatus() === 'active' ? 'bg-primary/10 font-medium' : ''}
-            >
-              Active
-            </DropdownMenuItem>
-            <DropdownMenuItem 
-              onClick={() => onStatusChange(item.id, 'outOfStock')}
-              className={getItemStatus() === 'outOfStock' ? 'bg-primary/10 font-medium' : ''}
-            >
-              Out of Stock
-            </DropdownMenuItem>
-            <DropdownMenuItem 
-              onClick={() => onStatusChange(item.id, 'disabled')}
-              className={getItemStatus() === 'disabled' ? 'bg-primary/10 font-medium' : ''}
-            >
-              Disabled
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
         
-        <Button size="icon" variant="ghost" onClick={() => onEdit(item)} className="hover:bg-white/10">
-          <Edit className="h-4 w-4" />
-        </Button>
-        <Button size="icon" variant="ghost" onClick={() => onDelete(item.id)} className="hover:bg-white/10">
-          <Trash2 className="h-4 w-4 text-red-500" />
-        </Button>
-        <div {...listeners} className="cursor-move p-1">
-          <MoveVertical className="h-4 w-4 text-gray-400" />
+        <div className={`flex items-center ml-4 ${isMobile ? 'flex-col gap-1' : 'gap-2'}`}>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button 
+                size="sm" 
+                variant="outline"
+                className="h-8 px-2 border-gray-200 hover:bg-gray-50"
+              >
+                <MoreVertical className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-40">
+              <DropdownMenuItem 
+                onClick={() => onStatusChange(item.id, 'active')}
+                className={getItemStatus() === 'active' ? 'bg-green-50 text-green-700 font-medium' : ''}
+              >
+                Active
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                onClick={() => onStatusChange(item.id, 'outOfStock')}
+                className={getItemStatus() === 'outOfStock' ? 'bg-orange-50 text-orange-700 font-medium' : ''}
+              >
+                Out of Stock
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                onClick={() => onStatusChange(item.id, 'disabled')}
+                className={getItemStatus() === 'disabled' ? 'bg-gray-50 text-gray-700 font-medium' : ''}
+              >
+                Disabled
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          
+          <Button size="sm" variant="outline" onClick={() => onEdit(item)} className="h-8 px-2 border-gray-200 hover:bg-gray-50">
+            <Edit className="h-4 w-4" />
+          </Button>
+          <Button size="sm" variant="outline" onClick={() => onDelete(item.id)} className="h-8 px-2 border-red-200 text-red-600 hover:bg-red-50">
+            <Trash2 className="h-4 w-4" />
+          </Button>
+          <div {...listeners} className="cursor-move p-1 rounded hover:bg-gray-100">
+            <MoveVertical className="h-4 w-4 text-gray-400" />
+          </div>
         </div>
       </div>
     </div>
@@ -222,99 +223,106 @@ const SortableMenuSection = ({
   };
 
   return (
-    <div
+    <Card
       ref={setNodeRef}
       style={style}
-      className={`menu-section glass-card mb-6 last:mb-0 border-l-4 ${section.isDisabled ? 'border-gray-400 opacity-75' : 'border-primary/50'}`}
+      className={`bg-gradient-to-br from-white to-gray-50 border-2 shadow-sm hover:shadow-md transition-all duration-200 ${section.isDisabled ? 'border-gray-300 opacity-75' : 'border-blue-200'}`}
     >
-      <div className={`flex ${isMobile ? 'flex-col' : 'justify-between'} items-start md:items-center mb-4`}>
-        <div className="flex items-center mb-2 md:mb-0">
-          <h3 className="text-xl font-bold">{section.name}</h3>
-          {section.isDisabled && (
-            <span className="ml-2 text-xs px-2 py-0.5 bg-gray-100 text-gray-800 rounded-full">Disabled</span>
-          )}
-          <div {...listeners} className="cursor-move p-1 ml-2">
-            <MoveVertical className="h-4 w-4 text-gray-400" />
-          </div>
-        </div>
-        
-        <div className="flex flex-wrap gap-2">
-          <div className="flex items-center">
-            <Label htmlFor={`section-disabled-${section.id}`} className="mr-2">Disabled</Label>
-            <Switch 
-              id={`section-disabled-${section.id}`} 
-              checked={section.isDisabled || false}
-              onCheckedChange={(checked) => onToggleSectionDisabled(section.id, checked)}
-            />
+      <CardHeader className="pb-4">
+        <div className={`flex ${isMobile ? 'flex-col gap-3' : 'justify-between items-center'}`}>
+          <div className="flex items-center gap-3">
+            <div {...listeners} className="cursor-move p-1 rounded hover:bg-gray-100">
+              <MoveVertical className="h-5 w-5 text-gray-400" />
+            </div>
+            <div>
+              <h3 className="text-xl font-bold text-gray-900">{section.name}</h3>
+              {section.isDisabled && (
+                <span className="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded-full font-medium">Section Disabled</span>
+              )}
+            </div>
           </div>
           
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={() => onEdit(section)}
-            className="border-white/30 bg-white/10 backdrop-blur-sm hover:bg-white/20"
-          >
-            <Edit className="h-4 w-4 mr-1" />
-            Edit
-          </Button>
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={() => onAddItem(section.id)}
-            className="border-white/30 bg-white/10 backdrop-blur-sm hover:bg-white/20"
-          >
-            <Plus className="h-4 w-4 mr-1" />
-            Add Item
-          </Button>
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={() => onDelete(section.id)}
-            className="border-red-400/30 text-red-500 hover:bg-red-500/10"
-          >
-            <Trash2 className="h-4 w-4 mr-1" />
-            Delete
-          </Button>
-        </div>
-      </div>
-      
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragEnd={handleDragEnd}
-      >
-        <SortableContext
-          items={section.items.map(item => item.id)}
-          strategy={verticalListSortingStrategy}
-        >
-          <div className="space-y-2">
-            {section.items.length > 0 ? (
-              section.items.map(item => (
-                <SortableMenuItem
-                  key={item.id}
-                  item={item}
-                  onEdit={(item) => onEditItem(section.id, item)}
-                  onDelete={(itemId) => onDeleteItem(section.id, itemId)}
-                  onStatusChange={(itemId, status) => onStatusChange(section.id, itemId, status)}
-                  currencySymbol={currencySymbol}
-                />
-              ))
-            ) : (
-              <div className="text-center py-8 border border-dashed rounded-md bg-white/5 backdrop-blur-sm">
-                <p className="text-gray-400">No items in this section</p>
-                <Button 
-                  variant="link" 
-                  className="mt-2 text-primary"
-                  onClick={() => onAddItem(section.id)}
-                >
-                  Add Item
-                </Button>
-              </div>
-            )}
+          <div className="flex flex-wrap gap-2 items-center">
+            <div className="flex items-center gap-2">
+              <Label htmlFor={`section-disabled-${section.id}`} className="text-sm font-medium">Disabled</Label>
+              <Switch 
+                id={`section-disabled-${section.id}`} 
+                checked={section.isDisabled || false}
+                onCheckedChange={(checked) => onToggleSectionDisabled(section.id, checked)}
+              />
+            </div>
+            
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => onEdit(section)}
+              className="border-gray-200 hover:bg-gray-50"
+            >
+              <Edit className="h-4 w-4 mr-1" />
+              Edit
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => onAddItem(section.id)}
+              className="bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100"
+            >
+              <Plus className="h-4 w-4 mr-1" />
+              Add Item
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => onDelete(section.id)}
+              className="border-red-200 text-red-600 hover:bg-red-50"
+            >
+              <Trash2 className="h-4 w-4 mr-1" />
+              Delete
+            </Button>
           </div>
-        </SortableContext>
-      </DndContext>
-    </div>
+        </div>
+      </CardHeader>
+      
+      <CardContent>
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext
+            items={section.items.map(item => item.id)}
+            strategy={verticalListSortingStrategy}
+          >
+            <div className="space-y-2">
+              {section.items.length > 0 ? (
+                section.items.map(item => (
+                  <SortableMenuItem
+                    key={item.id}
+                    item={item}
+                    onEdit={(item) => onEditItem(section.id, item)}
+                    onDelete={(itemId) => onDeleteItem(section.id, itemId)}
+                    onStatusChange={(itemId, status) => onStatusChange(section.id, itemId, status)}
+                    currencySymbol={currencySymbol}
+                  />
+                ))
+              ) : (
+                <div className="text-center py-12 border-2 border-dashed border-gray-200 rounded-lg bg-gray-50">
+                  <p className="text-gray-500 mb-3">No items in this section</p>
+                  <Button 
+                    variant="outline" 
+                    className="bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100"
+                    onClick={() => onAddItem(section.id)}
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add First Item
+                  </Button>
+                </div>
+              )}
+            </div>
+          </SortableContext>
+        </DndContext>
+      </CardContent>
+    </Card>
   );
 };
 
@@ -531,9 +539,9 @@ const MenuBuilder = () => {
       return;
     }
 
-    // Price is only required if no variations exist
+    // If no price variations, price is required
     let price = parseFloat(itemPrice);
-    if (!priceVariations.length && (isNaN(price) || price < 0)) {
+    if (priceVariations.length === 0 && (isNaN(price) || price < 0)) {
       toast({
         title: "Valid price required",
         description: "Please enter a valid price or add price variations.",
@@ -542,9 +550,9 @@ const MenuBuilder = () => {
       return;
     }
 
-    // If price variations exist, price is optional
+    // If price variations exist, price is not used
     if (priceVariations.length > 0) {
-      price = 0; // Set to 0 or undefined when variations exist
+      price = 0;
     }
 
     const sectionIndex = menuSections.findIndex(section => section.id === currentSectionId);
@@ -553,7 +561,6 @@ const MenuBuilder = () => {
     const updatedSections = [...menuSections];
     const section = { ...updatedSections[sectionIndex] };
 
-    // Image URL is optional - if empty, use undefined
     const imageUrl = itemImageUrl.trim() || "";
 
     if (currentItem) {
@@ -691,18 +698,7 @@ const MenuBuilder = () => {
   };
 
   const handleRemoveVariation = (index: number) => {
-    // Don't allow removing the last variation if we're using variations (and no base price)
-    const shouldPreventRemoval = priceVariations.length === 1 && !itemPrice;
-    
-    if (!shouldPreventRemoval) {
-      setPriceVariations(priceVariations.filter((_, i) => i !== index));
-    } else {
-      toast({
-        title: "Cannot remove all variations",
-        description: "You must have at least one price option. Add a base price or keep at least one variation.",
-        variant: "destructive",
-      });
-    }
+    setPriceVariations(priceVariations.filter((_, i) => i !== index));
   };
 
   const handleItemsReorder = (sectionId: string, items: MenuItem[]) => {
@@ -733,299 +729,314 @@ const MenuBuilder = () => {
 
   if (loading) {
     return (
-      <div className="page-container flex items-center justify-center min-h-[60vh]">
-        <div className="flex flex-col items-center">
-          <RefreshCcw className="h-8 w-8 animate-spin text-primary" />
-          <p className="mt-4 text-lg">Loading menu builder...</p>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+        <div className="flex flex-col items-center bg-white rounded-2xl p-8 shadow-lg">
+          <div className="animate-spin rounded-full h-12 w-12 border-2 border-gray-300 border-t-blue-600 mb-4"></div>
+          <p className="text-lg font-medium text-gray-700">Loading menu builder...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="page-container">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
-        <h1 className="text-3xl md:text-4xl font-bold font-display mb-4 md:mb-0 text-primary">Menu Builder</h1>
-        
-        <div className="flex flex-wrap gap-2">
-          <Button
-            variant="outline"
-            onClick={openAddSectionDialog}
-            className="flex items-center border-white/30 bg-white/10 backdrop-blur-sm"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Add Section
-          </Button>
-          
-          <Button
-            onClick={handleSaveMenu}
-            disabled={saving || !menuChanged}
-            className="flex items-center bg-black text-white hover:bg-black/90 backdrop-blur-sm"
-          >
-            {saving ? (
-              <>
-                <RefreshCcw className="h-4 w-4 mr-2 animate-spin" />
-                Saving...
-              </>
-            ) : (
-              <>
-                <Save className="h-4 w-4 mr-2" />
-                Save Menu
-              </>
-            )}
-          </Button>
-        </div>
-      </div>
-
-      {menuSections.length === 0 ? (
-        <Card className="glass-card">
-          <CardContent className="flex flex-col items-center justify-center py-16">
-            <h3 className="text-xl font-bold mb-4">Your menu is empty</h3>
-            <p className="mb-6 text-center max-w-md">
-              Start by adding a section to your menu, then add items to each section.
-            </p>
-            <Button
-              onClick={openAddSectionDialog}
-              className="flex items-center bg-primary/80 hover:bg-primary backdrop-blur-sm"
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Add Your First Section
-            </Button>
-          </CardContent>
-        </Card>
-      ) : (
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          onDragEnd={handleSectionsReorder}
-        >
-          <SortableContext
-            items={menuSections.map(section => section.id)}
-            strategy={verticalListSortingStrategy}
-          >
-            <div className="space-y-6">
-              {menuSections.map(section => (
-                <SortableMenuSection
-                  key={section.id}
-                  section={section}
-                  onEdit={openEditSectionDialog}
-                  onDelete={handleDeleteSection}
-                  onAddItem={openAddItemDialog}
-                  onEditItem={openEditItemDialog}
-                  onDeleteItem={handleDeleteItem}
-                  onStatusChange={handleStatusChange}
-                  onToggleSectionDisabled={handleToggleSectionDisabled}
-                  onItemsReorder={handleItemsReorder}
-                  currencySymbol={currencySymbol}
-                />
-              ))}
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        {/* Header */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-8">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+            <div className="mb-4 md:mb-0">
+              <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Menu Builder</h1>
+              <p className="text-gray-600">Create and manage your restaurant menu</p>
             </div>
-          </SortableContext>
-        </DndContext>
-      )}
-
-      {/* Section Dialog */}
-      <Dialog open={sectionDialogOpen} onOpenChange={setSectionDialogOpen}>
-        <DialogContent className={`glass-dialog ${isMobile ? 'w-[90vw] max-w-none mx-auto' : ''}`}>
-          <DialogHeader>
-            <DialogTitle>
-              {currentSection ? "Edit Section" : "Add Section"}
-            </DialogTitle>
-            <DialogDescription>
-              {currentSection
-                ? "Update the name of this menu section"
-                : "Add a new section to organize your menu items"}
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="grid gap-4 py-4">
-            <div className="space-y-2">
-              <label htmlFor="name" className="text-sm font-medium">
-                Section Name
-              </label>
-              <Input
-                id="name"
-                value={sectionName}
-                onChange={(e) => setSectionName(e.target.value)}
-                placeholder="e.g., Appetizers, Main Course, Desserts"
-              />
+            
+            <div className="flex flex-wrap gap-3">
+              <Button
+                variant="outline"
+                onClick={openAddSectionDialog}
+                className="bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Add Section
+              </Button>
+              
+              <Button
+                onClick={handleSaveMenu}
+                disabled={saving || !menuChanged}
+                className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 shadow-md"
+              >
+                {saving ? (
+                  <>
+                    <RefreshCcw className="h-4 w-4 mr-2 animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  <>
+                    <Save className="h-4 w-4 mr-2" />
+                    Save Menu
+                  </>
+                )}
+              </Button>
             </div>
           </div>
-          
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setSectionDialogOpen(false)} className="border-white/30 bg-white/10">
-              Cancel
-            </Button>
-            <Button 
-              onClick={handleSaveSection}
-              className="bg-black text-white hover:bg-black/90"
-            >
-              {currentSection ? "Update Section" : "Add Section"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        </div>
 
-      {/* Item Dialog */}
-      <Dialog open={itemDialogOpen} onOpenChange={setItemDialogOpen}>
-        <DialogContent className={`glass-dialog ${isMobile ? 'w-[90vw] max-w-none mx-auto' : 'sm:max-w-[500px]'} max-h-[90vh] overflow-y-auto bg-white text-black`}>
-          <DialogHeader>
-            <DialogTitle>
-              {currentItem ? "Edit Menu Item" : "Add Menu Item"}
-            </DialogTitle>
-            <DialogDescription>
-              {currentItem
-                ? "Update details for this menu item"
-                : "Add details for your new menu item"}
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="grid gap-4 py-4">
-            <div className="space-y-2">
-              <label htmlFor="item-name" className="text-sm font-medium">
-                Item Name
-              </label>
-              <Input
-                id="item-name"
-                value={itemName}
-                onChange={(e) => setItemName(e.target.value)}
-                placeholder="e.g., Caesar Salad"
-              />
-            </div>
+        {menuSections.length === 0 ? (
+          <Card className="bg-white shadow-sm border border-gray-200">
+            <CardContent className="flex flex-col items-center justify-center py-20">
+              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-6">
+                <Plus className="h-8 w-8 text-blue-600" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">Your menu is empty</h3>
+              <p className="mb-8 text-center max-w-md text-gray-600">
+                Start by adding a section to your menu, then add items to each section.
+              </p>
+              <Button
+                onClick={openAddSectionDialog}
+                className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 shadow-md"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Add Your First Section
+              </Button>
+            </CardContent>
+          </Card>
+        ) : (
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleSectionsReorder}
+          >
+            <SortableContext
+              items={menuSections.map(section => section.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              <div className="space-y-6">
+                {menuSections.map(section => (
+                  <SortableMenuSection
+                    key={section.id}
+                    section={section}
+                    onEdit={openEditSectionDialog}
+                    onDelete={handleDeleteSection}
+                    onAddItem={openAddItemDialog}
+                    onEditItem={openEditItemDialog}
+                    onDeleteItem={handleDeleteItem}
+                    onStatusChange={handleStatusChange}
+                    onToggleSectionDisabled={handleToggleSectionDisabled}
+                    onItemsReorder={handleItemsReorder}
+                    currencySymbol={currencySymbol}
+                  />
+                ))}
+              </div>
+            </SortableContext>
+          </DndContext>
+        )}
+
+        {/* Section Dialog */}
+        <Dialog open={sectionDialogOpen} onOpenChange={setSectionDialogOpen}>
+          <DialogContent className={`bg-white ${isMobile ? 'w-[90vw] max-w-none mx-auto' : ''}`}>
+            <DialogHeader>
+              <DialogTitle>
+                {currentSection ? "Edit Section" : "Add Section"}
+              </DialogTitle>
+              <DialogDescription>
+                {currentSection
+                  ? "Update the name of this menu section"
+                  : "Add a new section to organize your menu items"}
+              </DialogDescription>
+            </DialogHeader>
             
-            <div className={`space-y-2 ${priceVariations.length > 0 ? 'opacity-50' : ''}`}>
-              <label htmlFor="item-price" className="text-sm font-medium flex justify-between">
-                <span>Base Price {priceVariations.length > 0 && "(Not used with variations)"}</span>
-                {priceVariations.length > 0 && 
-                  <span className="text-xs text-gray-500">(Optional with variations)</span>
-                }
-              </label>
-              <div className="flex items-center">
-                <span className="mr-1">{currencySymbol}</span>
+            <div className="grid gap-4 py-4">
+              <div className="space-y-2">
+                <label htmlFor="name" className="text-sm font-medium">
+                  Section Name
+                </label>
                 <Input
-                  id="item-price"
-                  value={itemPrice}
-                  onChange={(e) => setItemPrice(e.target.value)}
-                  placeholder="0.00"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  disabled={priceVariations.length > 0}
+                  id="name"
+                  value={sectionName}
+                  onChange={(e) => setSectionName(e.target.value)}
+                  placeholder="e.g., Appetizers, Main Course, Desserts"
+                  className="border-gray-300"
                 />
               </div>
             </div>
             
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <label className="text-sm font-medium">Price Variations</label>
-                <Button 
-                  type="button" 
-                  size="sm" 
-                  onClick={handleAddVariation}
-                  className="bg-black text-white hover:bg-black/90"
-                >
-                  <Plus className="h-4 w-4 mr-1" /> Add Variation
-                </Button>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setSectionDialogOpen(false)} className="border-gray-300">
+                Cancel
+              </Button>
+              <Button 
+                onClick={handleSaveSection}
+                className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700"
+              >
+                {currentSection ? "Update Section" : "Add Section"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Item Dialog */}
+        <Dialog open={itemDialogOpen} onOpenChange={setItemDialogOpen}>
+          <DialogContent className={`bg-white ${isMobile ? 'w-[90vw] max-w-none mx-auto' : 'sm:max-w-[500px]'} max-h-[90vh] overflow-y-auto`}>
+            <DialogHeader>
+              <DialogTitle>
+                {currentItem ? "Edit Menu Item" : "Add Menu Item"}
+              </DialogTitle>
+              <DialogDescription>
+                {currentItem
+                  ? "Update details for this menu item"
+                  : "Add details for your new menu item"}
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="grid gap-4 py-4">
+              <div className="space-y-2">
+                <label htmlFor="item-name" className="text-sm font-medium">
+                  Item Name
+                </label>
+                <Input
+                  id="item-name"
+                  value={itemName}
+                  onChange={(e) => setItemName(e.target.value)}
+                  placeholder="e.g., Caesar Salad"
+                  className="border-gray-300"
+                />
               </div>
               
-              {priceVariations.map((variation, index) => (
-                <div key={index} className={`${isMobile ? 'flex flex-col gap-2' : 'flex items-center space-x-2'}`}>
+              <div className={`space-y-2 ${priceVariations.length > 0 ? 'opacity-50' : ''}`}>
+                <label htmlFor="item-price" className="text-sm font-medium flex justify-between">
+                  <span>Base Price {priceVariations.length > 0 && "(Not used with variations)"}</span>
+                  {priceVariations.length > 0 && 
+                    <span className="text-xs text-gray-500">(Optional with variations)</span>
+                  }
+                </label>
+                <div className="flex items-center">
+                  <span className="mr-1">{currencySymbol}</span>
                   <Input
-                    placeholder="Name (e.g., Quarter, Half)"
-                    value={variation.name}
-                    onChange={(e) => handleUpdateVariation(index, 'name', e.target.value)}
-                    className="flex-1"
+                    id="item-price"
+                    value={itemPrice}
+                    onChange={(e) => setItemPrice(e.target.value)}
+                    placeholder="0.00"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    disabled={priceVariations.length > 0}
+                    className="border-gray-300"
                   />
-                  <div className="flex items-center">
-                    <span className="mr-1">{currencySymbol}</span>
-                    <Input
-                      placeholder="Price"
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      value={variation.price}
-                      onChange={(e) => handleUpdateVariation(index, 'price', e.target.value)}
-                      className={isMobile ? "flex-1" : "w-24"}
-                    />
-                  </div>
+                </div>
+              </div>
+              
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <label className="text-sm font-medium">Price Variations</label>
                   <Button 
                     type="button" 
-                    size="icon" 
-                    variant="ghost" 
-                    onClick={() => handleRemoveVariation(index)}
-                    className="text-red-500"
+                    size="sm" 
+                    onClick={handleAddVariation}
+                    className="bg-blue-600 text-white hover:bg-blue-700"
                   >
-                    <Trash2 className="h-4 w-4" />
+                    <Plus className="h-4 w-4 mr-1" /> Add Variation
                   </Button>
                 </div>
-              ))}
-              
-              {priceVariations.length > 0 && 
-                <p className="text-xs text-gray-500">
-                  When using variations, the base price is optional and won't be displayed.
-                </p>
-              }
-            </div>
-            
-            <div className="space-y-2">
-              <label htmlFor="item-description" className="text-sm font-medium">
-                Description
-              </label>
-              <Textarea
-                id="item-description"
-                value={itemDescription}
-                onChange={(e) => setItemDescription(e.target.value)}
-                placeholder="Describe this item..."
-                rows={3}
-                className="border border-gray-300 bg-white/90 backdrop-blur-sm resize-none focus:border-black focus:bg-white"
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <label htmlFor="item-image" className="text-sm font-medium">
-                Image URL (Optional)
-              </label>
-              <Input
-                id="item-image"
-                value={itemImageUrl}
-                onChange={(e) => setItemImageUrl(e.target.value)}
-                placeholder="https://example.com/image.jpg"
-              />
-              <p className="text-xs text-gray-500">
-                Images are optional. For best results, use square images (1:1 aspect ratio)
-              </p>
-              
-              {itemImageUrl && (
-                <div className="mt-2 border rounded-md p-2">
-                  <p className="text-xs font-medium mb-1">Image Preview:</p>
-                  <div className="aspect-square w-24 h-24 overflow-hidden rounded-md bg-gray-100">
-                    <img 
-                      src={itemImageUrl} 
-                      alt="Preview" 
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        e.currentTarget.src = "https://placehold.co/200x200?text=Invalid+Image";
-                      }} 
+                
+                {priceVariations.map((variation, index) => (
+                  <div key={index} className={`${isMobile ? 'flex flex-col gap-2' : 'flex items-center space-x-2'}`}>
+                    <Input
+                      placeholder="Name (e.g., Quarter, Half)"
+                      value={variation.name}
+                      onChange={(e) => handleUpdateVariation(index, 'name', e.target.value)}
+                      className="flex-1 border-gray-300"
                     />
+                    <div className="flex items-center">
+                      <span className="mr-1">{currencySymbol}</span>
+                      <Input
+                        placeholder="Price"
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        value={variation.price}
+                        onChange={(e) => handleUpdateVariation(index, 'price', e.target.value)}
+                        className={`border-gray-300 ${isMobile ? "flex-1" : "w-24"}`}
+                      />
+                    </div>
+                    <Button 
+                      type="button" 
+                      size="icon" 
+                      variant="ghost" 
+                      onClick={() => handleRemoveVariation(index)}
+                      className="text-red-500 hover:bg-red-50"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </div>
-                </div>
-              )}
+                ))}
+                
+                {priceVariations.length > 0 && 
+                  <p className="text-xs text-gray-500">
+                    When using variations, the base price is optional and won't be displayed.
+                  </p>
+                }
+              </div>
+              
+              <div className="space-y-2">
+                <label htmlFor="item-description" className="text-sm font-medium">
+                  Description
+                </label>
+                <Textarea
+                  id="item-description"
+                  value={itemDescription}
+                  onChange={(e) => setItemDescription(e.target.value)}
+                  placeholder="Describe this item..."
+                  rows={3}
+                  className="border-gray-300 resize-none"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <label htmlFor="item-image" className="text-sm font-medium">
+                  Image URL (Optional)
+                </label>
+                <Input
+                  id="item-image"
+                  value={itemImageUrl}
+                  onChange={(e) => setItemImageUrl(e.target.value)}
+                  placeholder="https://example.com/image.jpg"
+                  className="border-gray-300"
+                />
+                <p className="text-xs text-gray-500">
+                  Images are optional. For best results, use square images (1:1 aspect ratio)
+                </p>
+                
+                {itemImageUrl && (
+                  <div className="mt-2 border rounded-md p-2">
+                    <p className="text-xs font-medium mb-1">Image Preview:</p>
+                    <div className="aspect-square w-24 h-24 overflow-hidden rounded-md bg-gray-100">
+                      <img 
+                        src={itemImageUrl} 
+                        alt="Preview" 
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.src = "https://placehold.co/200x200?text=Invalid+Image";
+                        }} 
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-          
-          <DialogFooter className={isMobile ? "flex-col space-y-2" : ""}>
-            <Button variant="outline" onClick={() => setItemDialogOpen(false)} className="border-gray-300 bg-white/90">
-              Cancel
-            </Button>
-            <Button 
-              onClick={handleSaveItem}
-              className="bg-black text-white hover:bg-black/90"
-            >
-              {currentItem ? "Update Item" : "Add Item"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+            
+            <DialogFooter className={isMobile ? "flex-col space-y-2" : ""}>
+              <Button variant="outline" onClick={() => setItemDialogOpen(false)} className="border-gray-300">
+                Cancel
+              </Button>
+              <Button 
+                onClick={handleSaveItem}
+                className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700"
+              >
+                {currentItem ? "Update Item" : "Add Item"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
     </div>
   );
 };

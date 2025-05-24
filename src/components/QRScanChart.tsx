@@ -1,27 +1,27 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
-interface MenuItemsChartProps {
+interface QRScanChartProps {
   data: Array<{
-    name: string;
-    items: number;
+    date: string;
+    scans: number;
   }>;
 }
 
-const MenuItemsChart = ({ data }: MenuItemsChartProps) => {
+const QRScanChart = ({ data }: QRScanChartProps) => {
   return (
     <Card className="bg-white border border-gray-200 h-full">
       <CardHeader className="pb-3">
-        <CardTitle className="text-lg text-black">Menu Items by Section</CardTitle>
-        <CardDescription className="text-sm">Number of items in each menu section</CardDescription>
+        <CardTitle className="text-lg text-black">Daily Menu Views - Last 7 Days</CardTitle>
+        <CardDescription className="text-sm">Daily menu view analytics</CardDescription>
       </CardHeader>
       <CardContent className="p-4">
         <ResponsiveContainer width="100%" height={200}>
-          <BarChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+          <LineChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
             <XAxis 
-              dataKey="name" 
+              dataKey="date" 
               fontSize={11}
               tick={{ fill: '#374151' }}
             />
@@ -38,16 +38,19 @@ const MenuItemsChart = ({ data }: MenuItemsChartProps) => {
                 fontSize: '12px'
               }}
             />
-            <Bar 
-              dataKey="items" 
-              fill="#3b82f6" 
-              radius={[4, 4, 0, 0]}
+            <Line 
+              type="monotone" 
+              dataKey="scans" 
+              stroke="#10b981" 
+              strokeWidth={2}
+              dot={{ fill: '#10b981', strokeWidth: 2, r: 3 }}
+              activeDot={{ r: 5, stroke: '#10b981', strokeWidth: 2 }}
             />
-          </BarChart>
+          </LineChart>
         </ResponsiveContainer>
       </CardContent>
     </Card>
   );
 };
 
-export default MenuItemsChart;
+export default QRScanChart;

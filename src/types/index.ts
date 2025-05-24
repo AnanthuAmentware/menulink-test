@@ -36,6 +36,8 @@ export type Restaurant = {
   menuSections: MenuSection[];
   currencySymbol?: string;
   qrScans?: number;
+  viewCount?: number;
+  dailyViews?: { [date: string]: number };
 };
 
 export type RestaurantSummary = {

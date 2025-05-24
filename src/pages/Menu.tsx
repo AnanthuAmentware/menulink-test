@@ -1,9 +1,9 @@
-
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { db, doc, getDoc } from '@/lib/firebase';
 import { Restaurant, MenuSection } from '@/types';
 import { useQRTracking } from '@/hooks/useQRTracking';
+import { useAuth } from '@/contexts/AuthContext';
 import { Clock, MapPin, Phone, Globe, Star } from 'lucide-react';
 
 const Menu = () => {
@@ -12,6 +12,7 @@ const Menu = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { trackQRScan } = useQRTracking();
+  const { currentUser } = useAuth();
 
   useEffect(() => {
     const fetchRestaurant = async () => {
@@ -26,10 +27,21 @@ const Menu = () => {
         
         if (restaurantDoc.exists()) {
           const data = restaurantDoc.data() as Restaurant;
-          setRestaurant({ id: restaurantDoc.id, ...data });
+          const restaurantData = { id: restaurantDoc.id, ...data };
           
-          // Track QR scan
-          await trackQRScan(restaurantId);
+          // Check if menu is private
+          if (!restaurantData.isPublic) {
+            setError('This menu is private and not available for public viewing');
+            setLoading(false);
+            return;
+          }
+          
+          setRestaurant(restaurantData);
+          
+          // Only track QR scan if user is not the owner
+          if (!currentUser || currentUser.uid !== restaurantData.ownerId) {
+            await trackQRScan(restaurantId);
+          }
         } else {
           setError('Restaurant not found');
         }
@@ -42,13 +54,13 @@ const Menu = () => {
     };
 
     fetchRestaurant();
-  }, [restaurantId, trackQRScan]);
+  }, [restaurantId, trackQRScan, currentUser]);
 
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-2 border-gray-300 border-t-primary mx-auto"></div>
           <p className="mt-4 text-gray-600">Loading menu...</p>
         </div>
       </div>
@@ -59,7 +71,7 @@ const Menu = () => {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Menu Not Found</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">Menu Not Available</h1>
           <p className="text-gray-600">{error || 'The requested menu could not be found.'}</p>
         </div>
       </div>
@@ -140,17 +152,17 @@ const Menu = () => {
                     {section.name}
                   </h2>
                   
-                  <div className="grid gap-6">
+                  <div className="grid gap-4">
                     {activeItems.map((item) => (
                       <div 
                         key={item.id} 
-                        className="bg-white rounded-lg shadow-sm border p-6 hover:shadow-md transition-shadow"
+                        className="bg-white rounded-lg shadow-sm border p-4 hover:shadow-md transition-shadow"
                       >
                         <div className="flex justify-between items-start">
                           <div className="flex-1">
-                            <div className="flex items-start gap-4">
+                            <div className="flex items-start gap-3">
                               {item.imageUrl && (
-                                <div className="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100">
+                                <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100">
                                   <img 
                                     src={item.imageUrl} 
                                     alt={item.name}
@@ -164,7 +176,7 @@ const Menu = () => {
                               
                               <div className="flex-1">
                                 <div className="flex items-center gap-2 mb-1">
-                                  <h3 className="text-xl font-semibold" style={{ color: textColor }}>
+                                  <h3 className="text-lg font-semibold" style={{ color: textColor }}>
                                     {item.name}
                                   </h3>
                                   {item.outOfStock && (
@@ -175,7 +187,7 @@ const Menu = () => {
                                 </div>
                                 
                                 {item.description && (
-                                  <p className="text-gray-600 mb-3 leading-relaxed">
+                                  <p className="text-gray-600 mb-2 text-sm leading-relaxed">
                                     {item.description}
                                   </p>
                                 )}
@@ -186,7 +198,7 @@ const Menu = () => {
                                       <div key={index} className="flex justify-between items-center">
                                         <span className="text-sm text-gray-600">{variation.name}</span>
                                         <span 
-                                          className="font-semibold text-lg"
+                                          className="font-semibold"
                                           style={{ color: primaryColor }}
                                         >
                                           {currencySymbol}{variation.price.toFixed(2)}
@@ -198,7 +210,7 @@ const Menu = () => {
                                   item.price && item.price > 0 && (
                                     <div className="text-right">
                                       <span 
-                                        className="text-2xl font-bold"
+                                        className="text-xl font-bold"
                                         style={{ color: primaryColor }}
                                       >
                                         {currencySymbol}{item.price.toFixed(2)}

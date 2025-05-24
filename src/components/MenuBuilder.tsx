@@ -24,7 +24,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MenuSection, MenuItem, PriceVariation } from "@/types";
-import { Plus, Trash2, MoveVertical, Save, Edit, RefreshCcw, XCircle, Eye, EyeOff } from "lucide-react";
+import { Plus, Trash2, MoveVertical, Save, Edit, RefreshCcw, XCircle, Eye, EyeOff, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { v4 as uuidv4 } from "uuid";
 import { 
@@ -85,11 +85,11 @@ const SortableMenuItem = ({
     const status = getItemStatus();
     switch (status) {
       case 'outOfStock':
-        return <Badge variant="destructive" className="text-xs">Out of Stock</Badge>;
+        return <Badge variant="destructive" className="text-xs px-2 py-1 rounded-full">Out of Stock</Badge>;
       case 'disabled':
-        return <Badge variant="secondary" className="text-xs">Disabled</Badge>;
+        return <Badge variant="secondary" className="text-xs px-2 py-1 rounded-full">Disabled</Badge>;
       default:
-        return <Badge variant="default" className="text-xs bg-green-100 text-green-800">Active</Badge>;
+        return <Badge variant="default" className="text-xs px-2 py-1 rounded-full bg-emerald-100 text-emerald-700 border-emerald-200">Active</Badge>;
     }
   };
 
@@ -98,55 +98,55 @@ const SortableMenuItem = ({
       ref={setNodeRef}
       style={style}
       {...attributes}
-      className={`bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow ${item.isDisabled ? 'opacity-60' : ''}`}
+      className={`group bg-white border border-gray-100 rounded-2xl p-4 hover:shadow-lg transition-all duration-300 hover:border-blue-200 ${item.isDisabled ? 'opacity-60' : ''}`}
     >
       <div className="flex items-start justify-between">
         <div className="flex-1 min-w-0 mr-4">
-          <div className="flex items-center gap-2 mb-1">
-            <h4 className="font-medium text-gray-900 truncate">{item.name}</h4>
+          <div className="flex items-center gap-3 mb-2">
+            <h4 className="font-semibold text-gray-900 truncate text-lg">{item.name}</h4>
             {getStatusBadge()}
           </div>
           {item.description && (
-            <p className="text-sm text-gray-500 mb-2 line-clamp-2">{item.description}</p>
+            <p className="text-sm text-gray-600 mb-3 line-clamp-2 leading-relaxed">{item.description}</p>
           )}
-          <div className="text-lg font-semibold text-primary">
+          <div className="text-xl font-bold text-blue-600">
             {item.priceVariations && item.priceVariations.length > 0 ? (
               <span>{`${currencySymbol}${item.priceVariations[0].price.toFixed(2)}+`}</span>
             ) : (
-              item.price ? <span>{currencySymbol}{item.price.toFixed(2)}</span> : <span>-</span>
+              item.price ? <span>{currencySymbol}{item.price.toFixed(2)}</span> : <span className="text-gray-400">-</span>
             )}
           </div>
         </div>
         
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button size="icon" variant="ghost" className="h-8 w-8">
+              <Button size="sm" variant="outline" className="h-8 w-8 p-0 rounded-full border-gray-200 hover:bg-gray-50">
                 {getItemStatus() === 'active' ? (
-                  <Eye className="h-4 w-4 text-green-600" />
+                  <Eye className="h-4 w-4 text-emerald-600" />
                 ) : (
                   <EyeOff className="h-4 w-4 text-gray-400" />
                 )}
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="bg-white">
+            <DropdownMenuContent align="end" className="bg-white rounded-xl border border-gray-100 shadow-lg">
               <DropdownMenuItem 
                 onClick={() => onStatusChange(item.id, 'active')}
-                className={getItemStatus() === 'active' ? 'bg-green-50 font-medium' : ''}
+                className={`rounded-lg ${getItemStatus() === 'active' ? 'bg-emerald-50 text-emerald-700 font-medium' : ''}`}
               >
                 <Eye className="h-4 w-4 mr-2" />
                 Active
               </DropdownMenuItem>
               <DropdownMenuItem 
                 onClick={() => onStatusChange(item.id, 'outOfStock')}
-                className={getItemStatus() === 'outOfStock' ? 'bg-red-50 font-medium' : ''}
+                className={`rounded-lg ${getItemStatus() === 'outOfStock' ? 'bg-red-50 text-red-700 font-medium' : ''}`}
               >
                 <XCircle className="h-4 w-4 mr-2" />
                 Out of Stock
               </DropdownMenuItem>
               <DropdownMenuItem 
                 onClick={() => onStatusChange(item.id, 'disabled')}
-                className={getItemStatus() === 'disabled' ? 'bg-gray-50 font-medium' : ''}
+                className={`rounded-lg ${getItemStatus() === 'disabled' ? 'bg-gray-50 text-gray-700 font-medium' : ''}`}
               >
                 <EyeOff className="h-4 w-4 mr-2" />
                 Disabled
@@ -154,13 +154,13 @@ const SortableMenuItem = ({
             </DropdownMenuContent>
           </DropdownMenu>
           
-          <Button size="icon" variant="ghost" onClick={() => onEdit(item)} className="h-8 w-8">
+          <Button size="sm" variant="outline" onClick={() => onEdit(item)} className="h-8 w-8 p-0 rounded-full border-gray-200 hover:bg-gray-50">
             <Edit className="h-4 w-4" />
           </Button>
-          <Button size="icon" variant="ghost" onClick={() => onDelete(item.id)} className="h-8 w-8 text-red-500 hover:text-red-700">
+          <Button size="sm" variant="outline" onClick={() => onDelete(item.id)} className="h-8 w-8 p-0 rounded-full border-red-200 text-red-500 hover:bg-red-50">
             <Trash2 className="h-4 w-4" />
           </Button>
-          <div {...listeners} className="cursor-move p-1">
+          <div {...listeners} className="cursor-move p-2 rounded-full hover:bg-gray-100 transition-colors">
             <MoveVertical className="h-4 w-4 text-gray-400" />
           </div>
         </div>
@@ -231,27 +231,27 @@ const SortableMenuSection = ({
     <div
       ref={setNodeRef}
       style={style}
-      className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm"
+      className="bg-gradient-to-br from-white to-gray-50/50 border border-gray-100 rounded-3xl p-8 shadow-sm hover:shadow-md transition-all duration-300"
     >
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <div {...listeners} className="cursor-move p-1">
+      <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center gap-4">
+          <div {...listeners} className="cursor-move p-2 rounded-xl hover:bg-gray-100 transition-colors">
             <MoveVertical className="h-5 w-5 text-gray-400" />
           </div>
           <div>
-            <h3 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
+            <h3 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
               {section.name}
               {section.isDisabled && (
-                <Badge variant="secondary" className="text-xs">Hidden</Badge>
+                <Badge variant="secondary" className="text-xs px-3 py-1 rounded-full">Hidden</Badge>
               )}
             </h3>
-            <p className="text-sm text-gray-500">{section.items.length} items</p>
+            <p className="text-sm text-gray-500 mt-1">{section.items.length} items</p>
           </div>
         </div>
         
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-2">
-            <Label htmlFor={`section-disabled-${section.id}`} className="text-sm">Hidden</Label>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 bg-white rounded-full px-4 py-2 border border-gray-200">
+            <Label htmlFor={`section-disabled-${section.id}`} className="text-sm font-medium">Hidden</Label>
             <Switch 
               id={`section-disabled-${section.id}`} 
               checked={section.isDisabled || false}
@@ -263,21 +263,25 @@ const SortableMenuSection = ({
             variant="outline" 
             size="sm"
             onClick={() => onEdit(section)}
+            className="rounded-full px-4 py-2 border-gray-200 hover:bg-gray-50"
           >
-            <Edit className="h-4 w-4" />
+            <Edit className="h-4 w-4 mr-2" />
+            Edit
           </Button>
           <Button 
             variant="outline" 
             size="sm"
             onClick={() => onAddItem(section.id)}
+            className="rounded-full px-4 py-2 bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100"
           >
-            <Plus className="h-4 w-4" />
+            <Plus className="h-4 w-4 mr-2" />
+            Add Item
           </Button>
           <Button 
             variant="outline" 
             size="sm"
             onClick={() => onDelete(section.id)}
-            className="text-red-600 border-red-200 hover:bg-red-50"
+            className="rounded-full px-4 py-2 border-red-200 text-red-600 hover:bg-red-50"
           >
             <Trash2 className="h-4 w-4" />
           </Button>
@@ -293,7 +297,7 @@ const SortableMenuSection = ({
           items={section.items.map(item => item.id)}
           strategy={verticalListSortingStrategy}
         >
-          <div className="grid gap-3">
+          <div className="grid gap-4">
             {section.items.length > 0 ? (
               section.items.map(item => (
                 <SortableMenuItem
@@ -306,15 +310,15 @@ const SortableMenuSection = ({
                 />
               ))
             ) : (
-              <div className="text-center py-12 border-2 border-dashed border-gray-200 rounded-lg bg-gray-50">
+              <div className="text-center py-16 border-2 border-dashed border-gray-200 rounded-2xl bg-gray-50/50">
                 <div className="flex flex-col items-center">
-                  <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mb-3">
-                    <Plus className="h-6 w-6 text-gray-400" />
+                  <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mb-4">
+                    <Plus className="h-8 w-8 text-blue-600" />
                   </div>
-                  <p className="text-gray-500 mb-2">No items in this section</p>
+                  <p className="text-gray-600 mb-3 font-medium">No items in this section</p>
                   <Button 
-                    variant="link" 
-                    className="text-primary"
+                    variant="outline" 
+                    className="bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100 rounded-full px-6"
                     onClick={() => onAddItem(section.id)}
                   >
                     Add your first item
@@ -744,47 +748,55 @@ const MenuBuilder = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="flex flex-col items-center">
-          <RefreshCcw className="h-8 w-8 animate-spin text-primary" />
-          <p className="mt-4 text-lg">Loading menu builder...</p>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50/50 to-indigo-50/50 flex items-center justify-center">
+        <div className="flex flex-col items-center bg-white rounded-3xl p-12 shadow-lg border border-gray-100">
+          <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mb-6">
+            <RefreshCcw className="h-8 w-8 animate-spin text-blue-600" />
+          </div>
+          <p className="text-xl font-semibold text-gray-700">Loading menu builder...</p>
+          <p className="text-sm text-gray-500 mt-2">Please wait while we prepare your workspace</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
-          <div>
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Menu Builder</h1>
-            <p className="text-gray-600">Create and manage your restaurant menu</p>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50/50 to-indigo-50/50">
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 py-12">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-12">
+          <div className="mb-6 md:mb-0">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center">
+                <Sparkles className="h-6 w-6 text-white" />
+              </div>
+              <h1 className="text-4xl md:text-5xl font-bold text-gray-900">Menu Builder</h1>
+            </div>
+            <p className="text-lg text-gray-600">Create and manage your restaurant menu with style</p>
           </div>
           
-          <div className="flex flex-wrap gap-3 mt-4 md:mt-0">
+          <div className="flex flex-wrap gap-4">
             <Button
               variant="outline"
               onClick={openAddSectionDialog}
-              className="flex items-center"
+              className="flex items-center rounded-full px-6 py-3 bg-white border-gray-200 hover:bg-gray-50 hover:border-blue-300 transition-all duration-200"
             >
-              <Plus className="h-4 w-4 mr-2" />
+              <Plus className="h-5 w-5 mr-2" />
               Add Section
             </Button>
             
             <Button
               onClick={handleSaveMenu}
               disabled={saving || !menuChanged}
-              className="flex items-center bg-primary text-white hover:bg-primary/90"
+              className="flex items-center rounded-full px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50"
             >
               {saving ? (
                 <>
-                  <RefreshCcw className="h-4 w-4 mr-2 animate-spin" />
+                  <RefreshCcw className="h-5 w-5 mr-2 animate-spin" />
                   Saving...
                 </>
               ) : (
                 <>
-                  <Save className="h-4 w-4 mr-2" />
+                  <Save className="h-5 w-5 mr-2" />
                   Save Menu
                 </>
               )}
@@ -793,19 +805,19 @@ const MenuBuilder = () => {
         </div>
 
         {menuSections.length === 0 ? (
-          <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
-            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Plus className="h-8 w-8 text-gray-400" />
+          <div className="bg-white rounded-3xl border border-gray-100 p-16 text-center shadow-sm">
+            <div className="w-24 h-24 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-3xl flex items-center justify-center mx-auto mb-8">
+              <Plus className="h-12 w-12 text-blue-600" />
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">Your menu is empty</h3>
-            <p className="text-gray-600 mb-6 max-w-md mx-auto">
-              Start by adding a section to your menu, then add items to each section.
+            <h3 className="text-3xl font-bold text-gray-900 mb-4">Your menu is empty</h3>
+            <p className="text-gray-600 mb-8 max-w-md mx-auto text-lg leading-relaxed">
+              Start by adding a section to your menu, then add items to each section to create your perfect dining experience.
             </p>
             <Button
               onClick={openAddSectionDialog}
-              className="flex items-center bg-primary text-white hover:bg-primary/90"
+              className="flex items-center rounded-full px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 shadow-lg hover:shadow-xl transition-all duration-200 text-lg"
             >
-              <Plus className="h-4 w-4 mr-2" />
+              <Plus className="h-5 w-5 mr-2" />
               Add Your First Section
             </Button>
           </div>
@@ -819,7 +831,7 @@ const MenuBuilder = () => {
               items={menuSections.map(section => section.id)}
               strategy={verticalListSortingStrategy}
             >
-              <div className="space-y-6">
+              <div className="space-y-8">
                 {menuSections.map(section => (
                   <SortableMenuSection
                     key={section.id}

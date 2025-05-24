@@ -10,6 +10,7 @@ import { Edit, Eye, QrCode, RefreshCcw, Menu as MenuIcon, Users, BarChart3, Star
 import { useToast } from '@/hooks/use-toast';
 import StatsCard from '@/components/StatsCard';
 import MenuItemsChart from '@/components/MenuItemsChart';
+import QRScanChart from '@/components/QRScanChart';
 
 const Dashboard = () => {
   const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
@@ -58,7 +59,7 @@ const Dashboard = () => {
   ) || 0;
 
   const sectionsCount = restaurant?.menuSections?.length || 0;
-  const qrScans = restaurant?.qrScans || 0;
+  const totalViews = restaurant?.viewCount || 0;
   const isPublic = restaurant?.isPublic || false;
 
   // Create chart data for menu sections
@@ -66,6 +67,30 @@ const Dashboard = () => {
     name: section.name.length > 10 ? section.name.substring(0, 10) + '...' : section.name,
     items: section.items?.length || 0
   })) || [];
+
+  // Generate QR scan data from restaurant's dailyViews
+  const generateQRScanData = () => {
+    const data = [];
+    const today = new Date();
+    
+    for (let i = 6; i >= 0; i--) {
+      const date = new Date(today);
+      date.setDate(date.getDate() - i);
+      const dateString = date.toISOString().split('T')[0];
+      
+      // Use real data from restaurant.dailyViews if available
+      const scans = restaurant?.dailyViews?.[dateString] || 0;
+      
+      data.push({
+        date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+        scans: scans
+      });
+    }
+    
+    return data;
+  };
+
+  const qrScanData = generateQRScanData();
 
   if (loading) {
     return (
@@ -114,9 +139,9 @@ const Dashboard = () => {
               icon={Eye}
             />
             <StatsCard
-              title="QR Scans"
-              value={qrScans}
-              description="Total scans"
+              title="Total Views"
+              value={totalViews}
+              description="Menu views"
               icon={QrCode}
             />
           </div>
@@ -243,10 +268,17 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* Chart Section */}
-          {chartData.length > 0 && (
-            <MenuItemsChart data={chartData} />
-          )}
+          {/* Chart Section - Half size and side by side on desktop */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {chartData.length > 0 && (
+              <div className="h-[300px]">
+                <MenuItemsChart data={chartData} />
+              </div>
+            )}
+            <div className="h-[300px]">
+              <QRScanChart data={qrScanData} />
+            </div>
+          </div>
         </div>
       ) : (
         <div className="text-center py-12 bg-white border border-gray-200 rounded-lg p-10">

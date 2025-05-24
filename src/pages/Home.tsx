@@ -1,11 +1,16 @@
 
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
 
 const Home = () => {
   const { isAuthenticated, isAdmin, isOwner } = useAuth();
+
+  // Redirect owners to dashboard
+  if (isOwner) {
+    return <Navigate to="/dashboard" replace />;
+  }
 
   return (
     <div className="min-h-screen">
@@ -32,13 +37,6 @@ const Home = () => {
                   </Button>
                 </Link>
               </>
-            )}
-            {isOwner && (
-              <Link to="/dashboard">
-                <Button size="lg" className="bg-white text-restaurant-burgundy hover:bg-restaurant-cream">
-                  Go to Dashboard
-                </Button>
-              </Link>
             )}
             {isAdmin && (
               <Link to="/admin">
